@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Check, CheckCircle2, X, XCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SimuladoMsaProps {
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
+  const navigate = useNavigate();
+  const handleBack = onBack || (() => navigate('/'));
   const [selectedPeriods, setSelectedPeriods] = useState<Set<number>>(new Set([1]));
   const [quizState, setQuizState] = useState<'MENU' | 'LOADING' | 'QUIZ' | 'RESULTS'>('MENU');
   
@@ -295,7 +298,7 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
           </button>
 
           <button
-            onClick={onBack}
+            onClick={handleBack}
             className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold rounded-2xl border-b-4 border-slate-300 active:border-b-0 active:translate-y-1 transition-all cursor-pointer text-sm uppercase tracking-wider"
           >
             Voltar

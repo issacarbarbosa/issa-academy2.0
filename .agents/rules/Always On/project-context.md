@@ -15,7 +15,7 @@ O **Issa Academy** é uma plataforma educacional gamificada de ensino musical vo
 - **Animações**: Motion / Framer Motion
 - **Sons**: Web Audio API (Síntese acústica dinâmica em tempo de execução)
 - **Tipagem**: TypeScript (Strict Mode e checagem sem `implicitAny`)
-- **Arquitetura**: Estado global de quiz via Zustand (`useQuizStore`), desmembramento modular de telas curriculares (`PhaseCard`, `LessonItemRow`, manifesto de 16 fases em `msaPhasesManifest.ts`). Em adoção: roteamento declarativo (React Router v7), offline-first PWA e validação de schema JSON (Valibot/Zod).
+- **Arquitetura**: Estado global de quiz via Zustand (`useQuizStore`), desmembramento modular de telas curriculares (`PhaseCard`, `LessonItemRow`, manifesto de 16 fases em `msaPhasesManifest.ts`), roteamento declarativo (`react-router-dom` com `<HashRouter>` e `React.lazy` para Code Splitting) e Progressive Web App (PWA) offline-first com Workbox (`vite-plugin-pwa`). Em adoção: validação de schema JSON (Valibot/Zod) e suíte de testes Vitest.
 
 ---
 
@@ -34,6 +34,12 @@ O projeto segue o padrão monorepo dividido em `core` e `modules`. O agente deve
 ### 3. Motor Visual Compartilhado (`<StaffSvgEngine />`)
 - **Regra:** A representação visual de pautas musicais (5 linhas, endecagrama, claves e linhas suplementares) é centralizada no componente `<StaffSvgEngine />` exportado por `src/core/components/`.
 - **Uso:** Quizzes, aulas e minijogos devem consumir o `<StaffSvgEngine />` ao invés de desenhar elementos `<svg>`, `<line>` ou claves manualmente na UI.
+
+### 4. Roteamento Declarativo e PWA Offline-First
+- **Regra de Roteamento:** O roteamento da SPA deve ser gerido de forma declarativa por `react-router-dom` com `<HashRouter>` (devido ao suporte à hospedagem estática no GitHub Pages).
+- **Code Splitting:** Todas as telas de topo (ex.: `WelcomeHome`, `CourseHome`, `MestreDaClave`, `SimuladoMsa`, `LessonSlideshow`) devem ser importadas assincronamente via `React.lazy` e encapsuladas com `<Suspense>` em `App.tsx` para garantir carregamento leve (chunks dedicados).
+- **Componentes Autônomos:** Os módulos e views devem consumir hooks do roteador (`useNavigate`, `useLocation`) com propriedades opcionais de callback, sendo 100% autônomos para renderização em rotas sem dependência de callbacks manuais do componente pai.
+- **PWA e Cache:** O manifesto da aplicação (`manifest.webmanifest`) e as estratégias de cache Workbox (precaching de assets estáticos e `NetworkOnly` para iframes do YouTube) são configurados em `vite.config.ts`.
 
 ---
 

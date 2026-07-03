@@ -1,11 +1,28 @@
 import React from 'react';
 import { ChevronRight, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface WelcomeHomeProps {
-  onNavigate: (view: 'home' | 'mestre_da_clave' | 'simulado_msa' | 'curso_home' | 'slideshow') => void;
+  onNavigate?: (view: 'home' | 'mestre_da_clave' | 'simulado_msa' | 'curso_home' | 'slideshow') => void;
 }
 
 export const WelcomeHome: React.FC<WelcomeHomeProps> = ({ onNavigate }) => {
+  const navigate = useNavigate();
+
+  const handleNav = (view: 'home' | 'mestre_da_clave' | 'simulado_msa' | 'curso_home' | 'slideshow') => {
+    if (onNavigate) {
+      onNavigate(view);
+      return;
+    }
+    const routes: Record<string, string> = {
+      home: '/',
+      mestre_da_clave: '/mestre-da-clave',
+      simulado_msa: '/simulado',
+      curso_home: '/curso',
+      slideshow: '/curso/aula',
+    };
+    navigate(routes[view] || '/');
+  };
   return (
     <div className="flex-1 flex flex-col w-full bg-white animate-fade" id="primary-site-home">
       {/* Mascot welcoming banner */}
@@ -26,7 +43,7 @@ export const WelcomeHome: React.FC<WelcomeHomeProps> = ({ onNavigate }) => {
         
         {/* CARD 1: MESTRE DA CLAVE */}
         <button
-          onClick={() => onNavigate('mestre_da_clave')}
+          onClick={() => handleNav('mestre_da_clave')}
           className="w-full text-left bg-[#f7f9fa] border-2 border-slate-200 rounded-2xl p-5 flex items-center gap-4 hover:border-sky-400 active:scale-[0.98] transition-all cursor-pointer relative group shadow-sm"
         >
           <div className="w-[80px] h-[80px] rounded-xl bg-[#1cb0f6] flex items-center justify-center shadow-md shadow-sky-500/10 overflow-visible shrink-0">
@@ -47,7 +64,7 @@ export const WelcomeHome: React.FC<WelcomeHomeProps> = ({ onNavigate }) => {
 
         {/* CARD 2: SIMULADO MSA */}
         <button
-          onClick={() => onNavigate('simulado_msa')}
+          onClick={() => handleNav('simulado_msa')}
           className="w-full text-left bg-[#f7f9fa] border-2 border-slate-200 rounded-2xl p-5 flex items-center gap-4 hover:border-emerald-400 active:scale-[0.98] transition-all cursor-pointer relative group shadow-sm"
         >
           <div className="w-[80px] h-[80px] rounded-xl bg-[#58cc02] flex items-center justify-center shadow-md shadow-emerald-500/10 overflow-visible shrink-0">
@@ -69,7 +86,7 @@ export const WelcomeHome: React.FC<WelcomeHomeProps> = ({ onNavigate }) => {
 
         {/* CARD 3: CURSO MSA DIGITAL */}
         <button
-          onClick={() => onNavigate('curso_home')}
+          onClick={() => handleNav('curso_home')}
           className="w-full text-left bg-[#f7f9fa] border-2 border-slate-200 rounded-2xl p-5 flex items-center gap-4 hover:border-purple-400 active:scale-[0.98] transition-all cursor-pointer relative group shadow-sm ring-2 ring-purple-500/15"
         >
           <div className="w-[80px] h-[80px] rounded-xl bg-[#ce82ff] flex items-center justify-center shadow-md shadow-purple-500/10 overflow-visible shrink-0">

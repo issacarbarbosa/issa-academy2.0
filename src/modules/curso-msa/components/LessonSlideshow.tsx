@@ -4,26 +4,35 @@ import {
   Volume2, Youtube, ThumbsUp, Bell, MessageSquare, RotateCcw 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { MusicalNote } from '../../../core/types';
+import { allNotes } from '../../../core/utils/notesData';
 import { EndecagramaStaff } from '../EndecagramaStaff';
 import { TheoryQuiz } from '../TheoryQuiz';
 import { startNote, stopNote } from '../../../core/utils/audio';
 
 interface LessonSlideshowProps {
-  onBackToCourse: () => void;
-  selectedNote: MusicalNote;
-  onNoteChange: (note: MusicalNote) => void;
-  playSound: (freq: number) => void;
-  stopSound: () => void;
+  onBackToCourse?: () => void;
+  selectedNote?: MusicalNote;
+  onNoteChange?: (note: MusicalNote) => void;
+  playSound?: (freq: number) => void;
+  stopSound?: () => void;
 }
 
 export const LessonSlideshow: React.FC<LessonSlideshowProps> = ({
   onBackToCourse,
-  selectedNote,
-  onNoteChange,
-  playSound,
-  stopSound,
+  selectedNote: propsSelectedNote,
+  onNoteChange: propsOnNoteChange,
+  playSound: propsPlaySound,
+  stopSound: propsStopSound,
 }) => {
+  const navigate = useNavigate();
+  const handleBack = onBackToCourse || (() => navigate('/curso'));
+  const [internalNote, setInternalNote] = useState<MusicalNote>(allNotes[20]); // Dó3 Central
+  const selectedNote = propsSelectedNote || internalNote;
+  const onNoteChange = propsOnNoteChange || setInternalNote;
+  const playSound = propsPlaySound || ((freq: number) => startNote(freq, 'global-instrument'));
+  const stopSound = propsStopSound || (() => stopNote('global-instrument'));
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [isPlayingDo3, setIsPlayingDo3] = useState<boolean>(false);
 
@@ -77,7 +86,7 @@ export const LessonSlideshow: React.FC<LessonSlideshowProps> = ({
       {/* Slide Navigation Header */}
       <div className="flex justify-between items-center max-w-5xl lg:max-w-6xl xl:max-w-[80%] w-full mr-auto ml-0 mb-6 border-b border-slate-200 pb-3">
         <button 
-          onClick={onBackToCourse}
+          onClick={handleBack}
           className="inline-flex items-center gap-1.5 text-xs text-indigo-600 font-extrabold hover:text-indigo-800 cursor-pointer"
         >
           <ArrowLeft size={14} /> Sair da Aula

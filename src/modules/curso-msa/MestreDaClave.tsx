@@ -1,14 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pause, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { initAudio, playLevelUpFanfare, playRewardChord, playError } from '../../core/utils/audio';
 import { useMsaCourse } from '../../core/contexts/MsaCourseContext';
 
 interface MestreDaClaveProps {
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 export function MestreDaClave({ onBack }: MestreDaClaveProps) {
+  const navigate = useNavigate();
+  const handleBack = onBack || (() => navigate('/'));
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   
@@ -698,7 +701,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
                 </button>
                 
                 <button 
-                  onClick={onBack}
+                  onClick={handleBack}
                   className="w-full py-2.5 bg-[#e2e8f0] hover:bg-[#cbd5e1] text-slate-700 font-extrabold rounded-2xl border-b-4 border-slate-400 active:border-b-0 active:translate-y-1 transition-all cursor-pointer text-xs sm:text-sm uppercase tracking-wider"
                 >
                   VOLTAR
@@ -742,7 +745,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
                 </button>
 
                 <button 
-                  onClick={onBack}
+                  onClick={handleBack}
                   className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-2xl border-b-4 border-red-800 active:border-b-0 transition-all cursor-pointer text-xs sm:text-sm uppercase tracking-wider"
                 >
                   Sair
@@ -785,7 +788,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
                 </button>
                 
                 <button 
-                  onClick={onBack}
+                  onClick={handleBack}
                   className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold rounded-2xl border-b-4 border-slate-300 active:border-b-0 transition-all cursor-pointer text-xs sm:text-sm uppercase tracking-wider"
                 >
                   Voltar ao Menu

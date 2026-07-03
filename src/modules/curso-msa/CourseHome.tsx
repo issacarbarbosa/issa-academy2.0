@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Play, BookOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useMsaCourse } from '../../core/contexts/MsaCourseContext';
 import { getMsaPhases, CourseItem } from './content/msaPhasesManifest';
 import { PhaseCard } from './components/PhaseCard';
@@ -7,18 +8,26 @@ import { PhaseCard } from './components/PhaseCard';
 export type { CourseItem, MsaPhase } from './content/msaPhasesManifest';
 
 interface CourseHomeProps {
-  onStartLesson: (phase: number, itemIndex: number) => void;
+  onStartLesson?: (phase: number, itemIndex: number) => void;
   completedItems?: string[];
   onToggleItem?: (itemId: string) => void;
-  onBackToMain: () => void;
+  onBackToMain?: () => void;
 }
 
 export function CourseHome({
-  onStartLesson,
+  onStartLesson: propsOnStartLesson,
   completedItems: propsCompletedItems,
   onToggleItem: propsOnToggleItem,
-  onBackToMain,
+  onBackToMain: propsOnBackToMain,
 }: CourseHomeProps) {
+  const navigate = useNavigate();
+  const onStartLesson = propsOnStartLesson || ((phase: number, itemIdx: number) => {
+    if (phase === 3 && itemIdx === 0) {
+      navigate('/curso/aula');
+    }
+  });
+  const onBackToMain = propsOnBackToMain || (() => navigate('/'));
+
   const { completedItems: contextCompletedItems, toggleCompletedItem: contextToggleCompletedItem } =
     useMsaCourse();
   const completedItems = propsCompletedItems || contextCompletedItems;
