@@ -18,7 +18,7 @@ Este documento detalha o progresso atual da plataforma e serve como controle de 
 - [x] **Prioridade Arquitetural #2 - Zustand e Desmembramento de CourseHome**: Eliminação do prop drilling de 14 props no quiz via store global (`useQuizStore`), modularização de `CourseHome.tsx` e extração do manifesto de 16 fases.
 - [x] **Prioridade Arquitetural #3 - Centralização de Áudio e SVG**: Refatoração do `MestreDaClave.tsx` para consumir unicamente `audio.ts` (filtro lowpass 1000Hz + ADSR) e extração do motor de pauta compartilhado `<StaffSvgEngine />`.
 - [x] **Prioridade Arquitetural #4 - Roteamento Declarativo e PWA**: Substituição de roteamento ad-hoc por React Router (`HashRouter`), Code Splitting com `React.lazy` nas 5 views principais e ativação de PWA offline-first via Workbox (`vite-plugin-pwa`).
-- [ ] **Prioridade Arquitetural #5 - Blindagem de Dados e Testes**: Adoção de Valibot/Zod para checagem dos JSONs de simulados e criação da suíte inicial de testes unitários com Vitest.
+- [x] **Prioridade Arquitetural #5 - Blindagem de Dados e Testes**: Adoção de Valibot/Zod para checagem dos JSONs de simulados e criação da suíte inicial de testes unitários com Vitest.
 
 
 ### 2. Módulo: Mestre da Clave (Jogo)
@@ -26,6 +26,8 @@ Este documento detalha o progresso atual da plataforma e serve como controle de 
 - [x] Leitura de notas na Clave de Sol (Fase 1 e Fase 2)
 - [ ] Implementação de seleção de Claves (Clave de Fá e Clave de Dó)
 - [ ] Rever a estrutura de dificuldade dos níveis
+- [ ] Rever o som do 'acerto' e do 'passar de nível' para ficar mais musical e divertido.
+- [ ] Rever o card que aparece quando passa de nível. Ele está atrapalhando a experiência no mobile.
 
 
 ### 3. Módulo: Simulado MSA (Questões)

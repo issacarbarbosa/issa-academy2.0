@@ -10,22 +10,6 @@ const OUTPUT_FILE = path.join(ROOT_DIR, 'MAPA_RAIZ.md');
 
 const EXCLUDE_DIRS = ['node_modules', '.git', 'dist', 'build', '.gemini'];
 
-// Descrições padronizadas das pastas chaves do projeto
-const DESCRIPTIONS = {
-  'src': 'Código-fonte principal da aplicação',
-  'src/core': 'Lógicas globais fundamentais (Contextos, Hooks, Utils)',
-  'src/core/contexts': 'Contextos do React para gerenciamento de estado global',
-  'src/core/hooks': 'Hooks customizados (ex: LocalStorage)',
-  'src/core/utils': 'Utilitários gerais (Síntese de áudio, frequências)',
-  'src/core/styles': 'Arquivos de estilo global',
-  'src/modules': 'Módulos independentes de domínio de negócios',
-  'src/modules/curso-msa': 'Módulo de teoria musical e simulado do MSA',
-  'src/modules/curso-msa/components': 'Componentes modulares extraídos do App.tsx',
-  'src/modules/curso-msa/questions': 'Banco de questões do simulado (JSONs)',
-  'public': 'Assets estáticos públicos (Imagens, Ícones, Som)',
-  'public/assets': 'Imagens e mídias do mascote Fufu e curso',
-};
-
 function getFolderTree(dirPath, relativePath = '', prefix = '') {
   let markdown = '';
   const items = fs.readdirSync(dirPath);
@@ -87,6 +71,16 @@ ${tree}\`\`\`
 `;
 
   fs.writeFileSync(OUTPUT_FILE, content, 'utf8');
+  console.log('✔ MAPA_RAIZ.md atualizado com sucesso via script de varredura.');
+
+  const UX_FILE = path.join(ROOT_DIR, 'FLUXO_USUARIO.md');
+  if (!fs.existsSync(UX_FILE)) {
+    console.log('✔ Arquivo FLUXO_USUARIO.md não encontrado. Criando template base...');
+    fs.writeFileSync(UX_FILE, '# Mapa de Experiência e Fluxo do Usuário: Issa Academy\n\n*Aguardando atualização semântica pelo agente...*\n', 'utf8');
+  } else {
+    console.log('✔ FLUXO_USUARIO.md detectado. Pronto para sincronização semântica do fluxo pelo agente.');
+  }
 }
 
 main();
+

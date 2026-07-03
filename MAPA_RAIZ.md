@@ -44,33 +44,35 @@ issa-academy/
 │       ├── 📄 fufu-acerto-palmas.png
 │       ├── 📄 fufu-acerto-piscando.png
 │       ├── 📄 fufu-acerto-toca-aqui.png
-│       ├── 📄 fufu-batuta-expontÃ¢neo.png
+│       ├── 📄 fufu-batuta-expontaneo.png
 │       ├── 📄 fufu-batuta.png
 │       ├── 📄 fufu-caneta.png
 │       ├── 📄 fufu-capa-home-pagge.png
 │       ├── 📄 fufu-capa-mestre-da-clave.png
 │       ├── 📄 fufu-capa-simulado.png
 │       ├── 📄 fufu-casaco.png
-│       ├── 📄 fufu-chapÃ©u.png
-│       ├── 📄 fufu-comemorando-trofÃ©u-G-clave.png
-│       ├── 📄 fufu-comemorando-trofÃ©u-gabarito.png
+│       ├── 📄 fufu-chapeu.png
+│       ├── 📄 fufu-comemorando-trofeu-G-clave.png
+│       ├── 📄 fufu-comemorando-trofeu-gabarito.png
 │       ├── 📄 fufu-erro-acontece.png
 │       ├── 📄 fufu-erro-carinho.png
 │       ├── 📄 fufu-erro-encorajador.png
-│       ├── 📄 fufu-erro-nÃ£o-desista.png
+│       ├── 📄 fufu-erro-nao-desista.png
 │       ├── 📄 fufu-erro-presente.png
 │       ├── 📄 fufu-erro-tapinha.png
 │       ├── 📄 fufu-neutro.png
+│       ├── 📄 fufu-oculos.png
 │       ├── 📄 fufu-pensativo.png
 │       ├── 📄 fufu-prancheta.png
 │       ├── 📄 fufu-violino.png
-│       ├── 📄 fufu-Ã³culos.png
 │       ├── 📄 social-home.png
 │       └── 📄 social-whatsapp.png
 ├── 📁 src/ # Código-fonte principal da aplicação
 │   ├── 📁 core/ # Lógicas globais fundamentais (Contextos, Hooks, Utils)
 │   │   ├── 📁 components/
-│   │   │   └── 📄 OrientationGuard.tsx
+│   │   │   ├── 📄 OrientationGuard.tsx
+│   │   │   ├── 📄 StaffSvgEngine.tsx
+│   │   │   └── 📄 index.ts
 │   │   ├── 📁 contexts/ # Contextos do React para gerenciamento de estado global
 │   │   │   └── 📄 MsaCourseContext.tsx
 │   │   ├── 📁 hooks/ # Hooks customizados (ex: LocalStorage)
@@ -78,19 +80,29 @@ issa-academy/
 │   │   │   └── 📄 useMobileOrientation.ts
 │   │   ├── 📁 utils/ # Utilitários gerais (Síntese de áudio, frequências)
 │   │   │   ├── 📄 audio.ts
+│   │   │   ├── 📄 notesData.test.ts
 │   │   │   └── 📄 notesData.ts
 │   │   └── 📄 types.ts
 │   ├── 📁 modules/ # Módulos independentes de domínio de negócios
 │   │   └── 📁 curso-msa/ # Módulo de teoria musical e simulado do MSA
 │   │       ├── 📁 components/ # Componentes modulares extraídos do App.tsx
+│   │       │   ├── 📄 LessonItemRow.tsx
 │   │       │   ├── 📄 LessonSlideshow.tsx
+│   │       │   ├── 📄 PhaseCard.tsx
 │   │       │   └── 📄 WelcomeHome.tsx
+│   │       ├── 📁 content/
+│   │       │   └── 📄 msaPhasesManifest.ts
 │   │       ├── 📁 questions/ # Banco de questões do simulado (JSONs)
 │   │       │   ├── 📄 q_f01.json
 │   │       │   ├── 📄 q_f02.json
 │   │       │   ├── 📄 q_f03.json
 │   │       │   ├── 📄 q_f04.json
-│   │       │   └── 📄 q_f05.json
+│   │       │   ├── 📄 q_f05.json
+│   │       │   ├── 📄 schema.test.ts
+│   │       │   └── 📄 schema.ts
+│   │       ├── 📁 stores/
+│   │       │   ├── 📄 useQuizStore.test.ts
+│   │       │   └── 📄 useQuizStore.ts
 │   │       ├── 📄 CourseHome.tsx
 │   │       ├── 📄 EndecagramaStaff.tsx
 │   │       ├── 📄 MestreDaClave.tsx
@@ -98,13 +110,15 @@ issa-academy/
 │   │       ├── 📄 SimuladoMsa.tsx
 │   │       ├── 📄 TheoryQuiz.tsx
 │   │       └── 📄 lessonsData.ts
+│   ├── 📁 test/
+│   │   └── 📄 setup.ts
 │   ├── 📄 App.tsx
 │   ├── 📄 index.css
 │   └── 📄 main.tsx
 ├── 📄 .env.example
 ├── 📄 .gitignore
+├── 📄 FLUXO_USUARIO.md
 ├── 📄 MAPA_RAIZ.md
-├── 📄 README.md
 ├── 📄 ROADMAP.md
 ├── 📄 eslint.config.js
 ├── 📄 index.html
@@ -112,8 +126,9 @@ issa-academy/
 ├── 📄 package-lock.json
 ├── 📄 package.json
 ├── 📄 tsconfig.json
-└── 📄 vite.config.ts
+├── 📄 vite.config.ts
+└── 📄 vitest.config.ts
 ```
 
 ---
-*Gerado automaticamente em: 02/07/2026, 16:08:13*
+*Gerado automaticamente em: 03/07/2026, 19:27:03*
