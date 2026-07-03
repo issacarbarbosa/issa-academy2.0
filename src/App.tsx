@@ -22,14 +22,6 @@ export default function App() {
   // Original Sandbox/Staff states
   const [selectedNote, setSelectedNote] = useState<MusicalNote>(allNotes[20]); // Starts at Middle C (Dó3)
 
-  // Shared Quiz state to prevent state loss on slide/tab switches
-  const [quizQuestionIndex, setQuizQuestionIndex] = useState<number>(0);
-  const [quizSelectedOption, setQuizSelectedOption] = useState<string | null>(null);
-  const [quizDragNoteIndex, setQuizDragNoteIndex] = useState<number>(20);
-  const [quizIsAnswered, setQuizIsAnswered] = useState<boolean>(false);
-  const [quizIsCorrect, setQuizIsCorrect] = useState<boolean | null>(null);
-  const [quizScore, setQuizScore] = useState<number>(0);
-  const [quizFinished, setQuizFinished] = useState<boolean>(false);
 
   const handleNoteChange = (note: MusicalNote) => {
     setSelectedNote(note);
@@ -66,13 +58,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             {currentView !== 'home' && (
               <button
-                onClick={() => {
-                  if (currentView === 'slideshow') {
-                    setCurrentView('curso_home');
-                  } else {
-                    setCurrentView('home');
-                  }
-                }}
+                onClick={() => setCurrentView('home')}
                 className="flex items-center gap-1.5 px-4 py-2 bg-[#f7f9fa] hover:bg-slate-100 text-slate-600 border-2 border-slate-200 rounded-xl text-xs font-black transition-all cursor-pointer shadow-sm"
               >
                 <ArrowLeft size={14} /> Voltar
@@ -132,20 +118,6 @@ export default function App() {
               onNoteChange={handleNoteChange}
               playSound={handlePlaySound}
               stopSound={handleStopSound}
-              quizQuestionIndex={quizQuestionIndex}
-              setQuizQuestionIndex={setQuizQuestionIndex}
-              quizSelectedOption={quizSelectedOption}
-              setQuizSelectedOption={setQuizSelectedOption}
-              quizDragNoteIndex={quizDragNoteIndex}
-              setQuizDragNoteIndex={setQuizDragNoteIndex}
-              quizIsAnswered={quizIsAnswered}
-              setQuizIsAnswered={setQuizIsAnswered}
-              quizIsCorrect={quizIsCorrect}
-              setQuizIsCorrect={setQuizIsCorrect}
-              quizScore={quizScore}
-              setQuizScore={setQuizScore}
-              quizFinished={quizFinished}
-              setQuizFinished={setQuizFinished}
             />
           </OrientationGuard>
         )}

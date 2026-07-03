@@ -15,22 +15,6 @@ interface LessonSlideshowProps {
   onNoteChange: (note: MusicalNote) => void;
   playSound: (freq: number) => void;
   stopSound: () => void;
-  
-  // Quiz states
-  quizQuestionIndex: number;
-  setQuizQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
-  quizSelectedOption: string | null;
-  setQuizSelectedOption: React.Dispatch<React.SetStateAction<string | null>>;
-  quizDragNoteIndex: number;
-  setQuizDragNoteIndex: React.Dispatch<React.SetStateAction<number>>;
-  quizIsAnswered: boolean;
-  setQuizIsAnswered: React.Dispatch<React.SetStateAction<boolean>>;
-  quizIsCorrect: boolean | null;
-  setQuizIsCorrect: React.Dispatch<React.SetStateAction<boolean | null>>;
-  quizScore: number;
-  setQuizScore: React.Dispatch<React.SetStateAction<number>>;
-  quizFinished: boolean;
-  setQuizFinished: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const LessonSlideshow: React.FC<LessonSlideshowProps> = ({
@@ -39,20 +23,6 @@ export const LessonSlideshow: React.FC<LessonSlideshowProps> = ({
   onNoteChange,
   playSound,
   stopSound,
-  quizQuestionIndex,
-  setQuizQuestionIndex,
-  quizSelectedOption,
-  setQuizSelectedOption,
-  quizDragNoteIndex,
-  setQuizDragNoteIndex,
-  quizIsAnswered,
-  setQuizIsAnswered,
-  quizIsCorrect,
-  setQuizIsCorrect,
-  quizScore,
-  setQuizScore,
-  quizFinished,
-  setQuizFinished,
 }) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [isPlayingDo3, setIsPlayingDo3] = useState<boolean>(false);
@@ -498,22 +468,7 @@ export const LessonSlideshow: React.FC<LessonSlideshowProps> = ({
               </div>
 
               <div className="w-full">
-                <TheoryQuiz 
-                  currentQuestionIndex={quizQuestionIndex}
-                  setCurrentQuestionIndex={setQuizQuestionIndex}
-                  selectedOption={quizSelectedOption}
-                  setSelectedOption={setQuizSelectedOption}
-                  dragNoteIndex={quizDragNoteIndex}
-                  setDragNoteIndex={setQuizDragNoteIndex}
-                  isAnswered={quizIsAnswered}
-                  setIsAnswered={setQuizIsAnswered}
-                  isCorrect={quizIsCorrect}
-                  setIsCorrect={setQuizIsCorrect}
-                  score={quizScore}
-                  setScore={setQuizScore}
-                  quizFinished={quizFinished}
-                  setQuizFinished={setQuizFinished}
-                />
+                <TheoryQuiz />
               </div>
             </motion.div>
           )}

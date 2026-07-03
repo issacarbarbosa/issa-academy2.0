@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { MusicalNote } from '../../core/types';
-import { allNotes, getNoteByPosition } from '../../core/utils/notesData';
+import { getNoteByPosition } from '../../core/utils/notesData';
 import { Volume2, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { PianoKeyboard } from './PianoKeyboard';

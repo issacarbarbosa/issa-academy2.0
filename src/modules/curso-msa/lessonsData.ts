@@ -1,4 +1,4 @@
-export interface QuizQuestion {
+export interface LessonQuizQuestion {
   question: string;
   options: string[];
   answerIndex: number;
@@ -8,7 +8,7 @@ export interface LessonDetail {
   videoUrl?: string;
   summary: string[];
   hasInteractiveSlideshow?: boolean;
-  quiz?: QuizQuestion[];
+  quiz?: LessonQuizQuestion[];
   practiceLink?: {
     label: string;
     view: 'mestre_da_clave' | 'simulado_msa';

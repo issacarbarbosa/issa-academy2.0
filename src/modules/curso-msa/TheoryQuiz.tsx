@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { QuizQuestion, MusicalNote } from '../../core/types';
-import { allNotes, getNoteByPosition } from '../../core/utils/notesData';
+import React from 'react';
+import { QuizQuestion } from '../../core/types';
+import { getNoteByPosition } from '../../core/utils/notesData';
 import { playSuccessSound, playErrorSound, startNote, stopNote } from '../../core/utils/audio';
 import { CheckCircle2, XCircle, ArrowRight, HelpCircle, RefreshCw, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useQuizStore } from './stores/useQuizStore';
 
 const quizQuestions: QuizQuestion[] = [
   {
@@ -116,52 +117,25 @@ const quizQuestions: QuizQuestion[] = [
   }
 ];
 
-export interface TheoryQuizProps {
-  currentQuestionIndex?: number;
-  setCurrentQuestionIndex?: React.Dispatch<React.SetStateAction<number>>;
-  selectedOption?: string | null;
-  setSelectedOption?: React.Dispatch<React.SetStateAction<string | null>>;
-  dragNoteIndex?: number;
-  setDragNoteIndex?: React.Dispatch<React.SetStateAction<number>>;
-  isAnswered?: boolean;
-  setIsAnswered?: React.Dispatch<React.SetStateAction<boolean>>;
-  isCorrect?: boolean | null;
-  setIsCorrect?: React.Dispatch<React.SetStateAction<boolean | null>>;
-  score?: number;
-  setScore?: React.Dispatch<React.SetStateAction<number>>;
-  quizFinished?: boolean;
-  setQuizFinished?: React.Dispatch<React.SetStateAction<boolean>>;
-}
+export interface TheoryQuizProps {}
 
-export const TheoryQuiz: React.FC<TheoryQuizProps> = (props) => {
-  const [localCurrentQuestionIndex, localSetCurrentQuestionIndex] = useState(0);
-  const [localSelectedOption, localSetSelectedOption] = useState<string | null>(null);
-  const [localDragNoteIndex, localSetDragNoteIndex] = useState(20); // Starts on C3 for drag challenges
-  const [localIsAnswered, localSetIsAnswered] = useState(false);
-  const [localIsCorrect, localSetIsCorrect] = useState<boolean | null>(null);
-  const [localScore, localSetScore] = useState(0);
-  const [localQuizFinished, localSetQuizFinished] = useState(false);
-
-  const currentQuestionIndex = props.currentQuestionIndex !== undefined ? props.currentQuestionIndex : localCurrentQuestionIndex;
-  const setCurrentQuestionIndex = props.setCurrentQuestionIndex || localSetCurrentQuestionIndex;
-
-  const selectedOption = props.selectedOption !== undefined ? props.selectedOption : localSelectedOption;
-  const setSelectedOption = props.setSelectedOption || localSetSelectedOption;
-
-  const dragNoteIndex = props.dragNoteIndex !== undefined ? props.dragNoteIndex : localDragNoteIndex;
-  const setDragNoteIndex = props.setDragNoteIndex || localSetDragNoteIndex;
-
-  const isAnswered = props.isAnswered !== undefined ? props.isAnswered : localIsAnswered;
-  const setIsAnswered = props.setIsAnswered || localSetIsAnswered;
-
-  const isCorrect = props.isCorrect !== undefined ? props.isCorrect : localIsCorrect;
-  const setIsCorrect = props.setIsCorrect || localSetIsCorrect;
-
-  const score = props.score !== undefined ? props.score : localScore;
-  const setScore = props.setScore || localSetScore;
-
-  const quizFinished = props.quizFinished !== undefined ? props.quizFinished : localQuizFinished;
-  const setQuizFinished = props.setQuizFinished || localSetQuizFinished;
+export const TheoryQuiz: React.FC<TheoryQuizProps> = () => {
+  const {
+    currentQuestionIndex,
+    setCurrentQuestionIndex,
+    selectedOption,
+    setSelectedOption,
+    dragNoteIndex,
+    setDragNoteIndex,
+    isAnswered,
+    setIsAnswered,
+    isCorrect,
+    setIsCorrect,
+    score,
+    setScore,
+    quizFinished,
+    setQuizFinished,
+  } = useQuizStore();
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
 

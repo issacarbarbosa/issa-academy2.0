@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Check, CheckCircle2, ChevronRight, Play, RotateCcw, X, XCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, CheckCircle2, X, XCircle } from 'lucide-react';
 
 interface SimuladoMsaProps {
   onBack: () => void;

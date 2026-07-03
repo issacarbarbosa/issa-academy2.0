@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Pause, Play, RotateCcw, Smartphone } from 'lucide-react';
+import { Pause, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useLocalStorage } from '../../core/hooks/useLocalStorage';
 import { getAudioContext } from '../../core/utils/audio';
 import { useMsaCourse } from '../../core/contexts/MsaCourseContext';
 
@@ -74,8 +73,6 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
     { base: 'Sol', pos: 9 }, { base: 'Lá', pos: 10 }
   ];
 
-  // Helper vectors for drawing notehead
-  const noteheadPath = "M0 4.35c3.6 0 6.5-1.95 6.5-4.35s-2.9-4.35-6.5-4.35-6.5 1.95-6.5 4.35 2.9 4.35 6.5 4.35zm0-1c-2.4 0-4.4-1.5-4.4-3.35s2-3.35 4.4-3.35 4.4 1.5 4.4 3.35-2 3.35-4.4 3.35z";
 
   // Audio helpers
   const initAudio = () => {

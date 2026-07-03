@@ -70,7 +70,9 @@ export function stopNote(noteId: string = 'global') {
         try {
           osc.stop();
           osc.disconnect();
-        } catch (e) {}
+        } catch {
+          // ignore already stopped oscillator
+        }
       }, 200);
 
       delete activeOscillators[noteId];

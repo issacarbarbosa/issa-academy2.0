@@ -14,6 +14,11 @@ Este documento detalha o progresso atual da plataforma e serve como controle de 
 - [x] Configuração do ESLint no projeto
 - [x] Implementação de Hooks e Linter Otimizado por arquivo (`run-linter.js` em `PostToolUse`)
 - [x] Adaptação Mobile-First e sensor de orientação (`OrientationGuard.tsx`) nas telas musicais
+- [x] **Prioridade Arquitetural #1 - Limpeza e TypeScript Strict Mode**: Remoção de pacotes fantasmas (`@google/genai`, `express`, `dotenv`), ativação das flags `"strict": true` e `"noImplicitAny": true` em `tsconfig.json` e unificação da tipagem de quiz (`LessonQuizQuestion`).
+- [x] **Prioridade Arquitetural #2 - Zustand e Desmembramento de CourseHome**: Eliminação do prop drilling de 14 props no quiz via store global (`useQuizStore`), modularização de `CourseHome.tsx` e extração do manifesto de 16 fases.
+- [ ] **Prioridade Arquitetural #3 - Centralização de Áudio e SVG**: Refatoração do `MestreDaClave.tsx` para consumir unicamente `audio.ts` (filtro lowpass 1000Hz + ADSR) e extração do motor de pauta compartilhado `<StaffSvgEngine />`.
+- [ ] **Prioridade Arquitetural #4 - Roteamento Declarativo e PWA**: Substituição de roteamento ad-hoc pelo React Router com code splitting e ativação do Workbox (`vite-plugin-pwa`) para estudo offline-first.
+- [ ] **Prioridade Arquitetural #5 - Blindagem de Dados e Testes**: Adoção de Valibot/Zod para checagem dos JSONs de simulados e criação da suíte inicial de testes unitários com Vitest.
 
 
 ### 2. Módulo: Mestre da Clave (Jogo)
@@ -42,6 +47,8 @@ Este documento detalha o progresso atual da plataforma e serve como controle de 
 - [ ] **Fase 4 - Fundamentos Rítmicos**: Ligadura, ponto de aumento, intervalo, compassos em 2 e 3, e movimentos de condução em 2 e 3 tempos.
 - [ ] **Fase 5 - Subdivisões**: Tercinas, Fermata, compasso e movimentos de solfejo em 6 tempos.
 - [ ] **Fase 6 a 16**: (Escalas maiores com sustenidos/bemóis, armadura de clave, tonalidades, repetições, dinâmica, compasso composto, síncopa/contratempo, ritmos iniciais, andamento e interpretação).
+- [ ] **Correção do Player de Vídeo no Retrato (Mobile)**: Investigar por que os botões de pause, play e tela cheia do iframe do YouTube não respondem a cliques/toques no dispositivo real na orientação retrato, e implementar a correção.
+- [ ] **Atualizar Manifesto Curricular:** Atualizar conforme Sumário do MSA e grade das aulas já gravadas no YouTube.
 
 ---
 
@@ -53,7 +60,7 @@ Este documento detalha o progresso atual da plataforma e serve como controle de 
 - **2026-06-30 (V)**: Remoção total do módulo de visualização Explorar Sandbox (SandboxExplorer) e do InteractiveTheory do projeto. Componentes compartilhados como TheoryQuiz, EndecagramaStaff e PianoKeyboard foram mantidos intactos e continuam operando ativamente na LessonSlideshow.
 - **2026-06-30 (VI)**: Implementação de correções de UX/UI baseadas em auditoria móvel. Ocultamos o cabeçalho global em mobile landscape (ganho de 70px de altura de tela útil), corrigimos o Fufu cortado no simulado vertical com recuo seguro, ampliamos a área de toque dos botões do curso para 44px (padrão WCAG) e adicionamos indicador de scroll "Role para ver mais" na Home horizontal.
 - **2026-06-30 (VII)**: Implementação do Sistema Híbrido de Aulas do Curso MSA. Criamos a base de dados de aulas (`lessonsData.ts`) integrando videoaulas do YouTube do professor. Desenvolvemos a interface de 3 abas por lição (Assistir, Resumo, Praticar) na grade do curso, com quizzes interativos de fixação e o slideshow da Fase 3.1. O banner superior "Ativo Atualmente" agora busca dinamicamente o primeiro item pendente do aluno. Ocultamos também o cabeçalho global em modo paisagem baseado em altura de tela (`max-height: 500px`).
+- **2026-07-03**: Realização de Auditoria Técnica de Arquitetura e Avaliação Estratégica de Stack (benchmark de mercado). Definição do roteiro de 5 Prioridades Arquiteturais. Conclusão da **Prioridade #1**: Desinstalação de dependências fantasmas (`@google/genai`, `express`, `dotenv`), ativação de TypeScript Strict Mode (`"strict": true`, `"noImplicitAny": true`) com 0 erros de compilação, resolução de conflito de tipagem em `lessonsData.ts` e otimização das regras de exclusão no `eslint.config.js`.
 
-## 📋 Tarefas Pendentes
-- [ ] **Correção do Player de Vídeo no Retrato (Mobile)**: Investigar por que os botões de pause, play e tela cheia do iframe do YouTube não respondem a cliques/toques no dispositivo real na orientação retrato, e implementar a correção.
+
 
