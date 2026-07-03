@@ -14,8 +14,8 @@ O **Issa Academy** é uma plataforma educacional gamificada de ensino musical vo
 - **Estilos**: Tailwind CSS v4 (Light theme, cores "juicy" vibrantes)
 - **Animações**: Motion / Framer Motion
 - **Sons**: Web Audio API (Síntese acústica dinâmica em tempo de execução)
-- **Tipagem**: TypeScript (Strict Mode e checagem sem `implicitAny`)
-- **Arquitetura**: Estado global de quiz via Zustand (`useQuizStore`), desmembramento modular de telas curriculares (`PhaseCard`, `LessonItemRow`, manifesto de 16 fases em `msaPhasesManifest.ts`), roteamento declarativo (`react-router-dom` com `<HashRouter>` e `React.lazy` para Code Splitting) e Progressive Web App (PWA) offline-first com Workbox (`vite-plugin-pwa`). Em adoção: validação de schema JSON (Valibot/Zod) e suíte de testes Vitest.
+- **Tipagem**: TypeScript (Strict Mode e checagem sem `implicitAny`) + Zod para validação em tempo de execução
+- **Arquitetura**: Estado global de quiz via Zustand (`useQuizStore`), desmembramento modular de telas curriculares (`PhaseCard`, `LessonItemRow`, manifesto de 16 fases em `msaPhasesManifest.ts`), roteamento declarativo (`react-router-dom` com `<HashRouter>` e `React.lazy` para Code Splitting), PWA offline-first com Workbox (`vite-plugin-pwa`), blindagem de schemas JSON via Zod (`schema.ts`) e testes unitários co-localizados via Vitest e Testing Library (`*.test.ts`).
 
 ---
 
@@ -29,7 +29,7 @@ O projeto segue o padrão monorepo dividido em `core` e `modules`. O agente deve
 ### 2. Fronteira `src/modules/`
 - **Regra:** Domínios de negócio isolados e interfaces do usuário vivem aqui.
 - **Diretiva para o Curso MSA:** Todo o ecossistema didático do método MSA fica isolado em `src/modules/curso-msa/`.
-- **Diretiva de Banco de Dados Local:** O agente deve ler e criar bancos de dados do simulado exclusivamente como arquivos JSON dentro do subdiretório `src/modules/curso-msa/questions/`, devidamente tipados e validados por schema.
+- **Diretiva de Banco de Dados Local:** O agente deve ler e criar bancos de dados do simulado exclusivamente como arquivos JSON dentro do subdiretório `src/modules/curso-msa/questions/`, devidamente tipados e validados por schema via Zod.
 
 ### 3. Motor Visual Compartilhado (`<StaffSvgEngine />`)
 - **Regra:** A representação visual de pautas musicais (5 linhas, endecagrama, claves e linhas suplementares) é centralizada no componente `<StaffSvgEngine />` exportado por `src/core/components/`.
@@ -40,6 +40,10 @@ O projeto segue o padrão monorepo dividido em `core` e `modules`. O agente deve
 - **Code Splitting:** Todas as telas de topo (ex.: `WelcomeHome`, `CourseHome`, `MestreDaClave`, `SimuladoMsa`, `LessonSlideshow`) devem ser importadas assincronamente via `React.lazy` e encapsuladas com `<Suspense>` em `App.tsx` para garantir carregamento leve (chunks dedicados).
 - **Componentes Autônomos:** Os módulos e views devem consumir hooks do roteador (`useNavigate`, `useLocation`) com propriedades opcionais de callback, sendo 100% autônomos para renderização em rotas sem dependência de callbacks manuais do componente pai.
 - **PWA e Cache:** O manifesto da aplicação (`manifest.webmanifest`) e as estratégias de cache Workbox (precaching de assets estáticos e `NetworkOnly` para iframes do YouTube) são configurados em `vite.config.ts`.
+
+### 5. Blindagem de Dados (Zod) e Testes Co-localizados (Vitest)
+- **Validação Estrita de Schemas:** Todo carregamento dinâmico ou externo de dados (ex.: arquivos JSON em `questions/`) DEVE ser validado com schemas Zod antes de ser consumido pelo estado da aplicação. É proibido o uso de `any` para tipar dados externos.
+- **Testes Unitários Co-localizados:** Todos os testes unitários (`*.test.ts` ou `*.test.tsx`) devem residir na mesma pasta que o código fonte que estão testando, rodando sob o framework Vitest no ambiente JSDOM.
 
 ---
 

@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Check, CheckCircle2, X, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  SimuladoQuestion, 
+  SimuladoQuestionOption, 
+  WrongAnswerRecord, 
+  validateQuestionBank 
+} from './questions/schema';
 
 interface SimuladoMsaProps {
   onBack?: () => void;
@@ -13,12 +19,12 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
   const [quizState, setQuizState] = useState<'MENU' | 'LOADING' | 'QUIZ' | 'RESULTS'>('MENU');
   
   // Quiz variables
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<SimuladoQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
-  const [selectedOption, setSelectedOption] = useState<any>(null);
+  const [selectedOption, setSelectedOption] = useState<SimuladoQuestionOption | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState<boolean>(false);
-  const [wrongAnswers, setWrongAnswers] = useState<any[]>([]);
+  const [wrongAnswers, setWrongAnswers] = useState<WrongAnswerRecord[]>([]);
   
   // Timer & Results
   const [quizStartTime, setQuizStartTime] = useState<number>(0);
@@ -53,7 +59,7 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
     if (selectedPeriods.size === 0) return;
     setQuizState('LOADING');
 
-    let bank: any[] = [];
+    let bank: unknown[] = [];
     try {
       if (selectedPeriods.has(1)) {
         const q1 = await import('./questions/q_f01.json');
@@ -73,15 +79,17 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
       return;
     }
 
-    if (bank.length === 0) {
+    const validatedBank = validateQuestionBank(bank);
+
+    if (validatedBank.length === 0) {
       alert("Erro ao carregar as questões do simulado.");
       setQuizState('MENU');
       return;
     }
 
     // Filter active questions, shuffle, and select 20
-    const activeQuestions = bank
-      .filter((q: any) => q.ativo !== false)
+    const activeQuestions = validatedBank
+      .filter(q => q.ativo !== false)
       .sort(() => 0.5 - Math.random())
       .slice(0, 20);
 
@@ -95,7 +103,7 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
     setQuizState('QUIZ');
   };
 
-  const handleSelectOption = (opt: any) => {
+  const handleSelectOption = (opt: SimuladoQuestionOption) => {
     if (isAnswerChecked) return;
     setSelectedOption(opt);
   };
@@ -110,15 +118,17 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
     if (isCorrect) {
       setScore(prev => prev + 1);
     } else {
-      const correctOpt = currentQuestion.opcoes.find((o: any) => o.correta);
-      setWrongAnswers(prev => [
-        ...prev,
-        {
-          question: currentQuestion.pergunta,
-          correctAnswer: correctOpt.texto,
-          reference: currentQuestion.referencia
-        }
-      ]);
+      const correctOpt = currentQuestion.opcoes.find(o => o.correta);
+      if (correctOpt) {
+        setWrongAnswers(prev => [
+          ...prev,
+          {
+            question: currentQuestion.pergunta,
+            correctAnswer: correctOpt.texto,
+            reference: currentQuestion.referencia
+          }
+        ]);
+      }
     }
   };
 
@@ -356,7 +366,7 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
 
           {/* Multiple choice options */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-            {currentQuestion.opcoes.map((opt: any, index: number) => {
+            {currentQuestion.opcoes.map((opt, index) => {
               const isSelected = selectedOption === opt;
               const isCorrectOpt = opt.correta === true;
               
@@ -399,7 +409,7 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
           </div>
 
           {/* Dynamic feedback panel */}
-          {isAnswerChecked && (
+          {isAnswerChecked && selectedOption && (
             <div className={`p-5 rounded-2xl border-2 mb-6 animate-pop relative overflow-hidden ${
               selectedOption.correta 
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
@@ -435,7 +445,7 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
                 
                 {!selectedOption.correta && (
                   <p className="border-t border-red-200/50 pt-2 mt-2 font-black text-slate-800">
-                    Solução Correta: <span className="text-emerald-700">{formatText(currentQuestion.opcoes.find((o: any) => o.correta).texto)}</span>
+                    Solução Correta: <span className="text-emerald-700">{formatText(currentQuestion.opcoes.find(o => o.correta)?.texto || '')}</span>
                   </p>
                 )}
 

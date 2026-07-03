@@ -11,13 +11,14 @@ globs: *.ts, *.tsx
 - Progressive Web App (PWA) Offline-First (`vite-plugin-pwa` + Workbox)
 - Tailwind CSS v4 (Cores vibrantes)
 - Zustand (Gerenciamento de estado global escalável)
-- Valibot / Zod (Validação estrita de schemas para JSONs dinâmicos)
+- Zod (Validação estrita de schemas para blindagem de JSONs dinâmicos em tempo de execução via `schema.ts`)
+- Vitest + Testing Library (Suíte de testes unitários co-localizados rodando no ambiente JSDOM)
 
 ## Padrões Arquiteturais
 - **Organização Modular e Subcomponentização por Feature:** A pasta `src/modules/` deve conter os domínios isolados do projeto. Cada feature (ex: `curso-msa`) é autocontida e abriga seus próprios componentes de visualização subdivididos por responsabilidade (ex: `CourseHome.tsx` delegando para `PhaseCard.tsx` e `LessonItemRow.tsx`), lógica de negócio, hooks e stores customizados (`stores/useQuizStore.ts`), tipos locais e testes.
 - **Roteamento Declarativo e Code Splitting:** A navegação deve ser estruturada no topo em `App.tsx` via `<HashRouter>` e `<Routes>`. Todas as telas principais da SPA devem ser divididas em chunks assíncronos usando `React.lazy` com `<Suspense fallback={...}>`. Componentes de rota devem priorizar o uso de hooks (`useNavigate()`, `useLocation()`) e expor props de navegação apenas como opcionais (`onBack?: () => void`).
-- **Tipagem Rigorosa Sem `any`:** O uso do tipo `any` é proibido no projeto. Dados carregados externamente (como arquivos JSON de simulado) devem ser estritamente tipados ou validados no momento da importação via esquemas (Valibot/Zod).
-- **Testes Unitários Co-localizados:** Todos os testes unitários (`*.test.ts` ou `*.test.tsx`) devem residir na mesma pasta que o código fonte que estão testando.
+- **Tipagem Rigorosa e Blindagem Sem `any`:** O uso do tipo `any` é proibido no projeto. Dados carregados externamente (como arquivos JSON do simulado in `questions/*.json`) devem ser estritamente tipados e validados no momento da importação via esquemas Zod (`validateQuestionBank`), garantindo que dados malformados ou corrompidos não quebrem a UI.
+- **Testes Unitários Co-localizados:** Todos os testes unitários (`*.test.ts` ou `*.test.tsx`) devem residir na mesma pasta que o código fonte que estão testando (ex: `notesData.test.ts` ao lado de `notesData.ts`, `schema.test.ts` ao lado de `schema.ts`). Todos os testes devem ser executados e validados via `npm run test` sob o framework Vitest.
 
 
 ## Convenções de Nomenclatura
