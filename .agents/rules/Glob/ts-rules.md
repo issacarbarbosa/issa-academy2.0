@@ -24,4 +24,5 @@ globs: *.ts, *.tsx
 - Hooks Customizados: `use[Nome].ts` (ex: `useAuth.ts`)
 - Tipos Locais: `[modulo].types.ts`
 - Barrel Exports: Use `index.ts` **apenas** dentro da pasta `src/core/` para simplificar importações de componentes comuns. Evite barrel exports profundos ou circulares entre módulos.
+- Tipos de Componentes Core: Componentes visuais compartilhados como `StaffSvgEngine` devem exportar suas interfaces de props junto com o componente.
 - Path Aliases: Sempre use imports absolutos através do alias `@/` (ex: `import { Button } from '@/core/components'`).

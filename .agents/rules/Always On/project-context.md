@@ -31,6 +31,10 @@ O projeto segue o padrão monorepo dividido em `core` e `modules`. O agente deve
 - **Diretiva para o Curso MSA:** Todo o ecossistema didático do método MSA fica isolado em `src/modules/curso-msa/`.
 - **Diretiva de Banco de Dados Local:** O agente deve ler e criar bancos de dados do simulado exclusivamente como arquivos JSON dentro do subdiretório `src/modules/curso-msa/questions/`, devidamente tipados e validados por schema.
 
+### 3. Motor Visual Compartilhado (`<StaffSvgEngine />`)
+- **Regra:** A representação visual de pautas musicais (5 linhas, endecagrama, claves e linhas suplementares) é centralizada no componente `<StaffSvgEngine />` exportado por `src/core/components/`.
+- **Uso:** Quizzes, aulas e minijogos devem consumir o `<StaffSvgEngine />` ao invés de desenhar elementos `<svg>`, `<line>` ou claves manualmente na UI.
+
 ---
 
 ## 🔊 Restrições do Motor de Áudio (Web Audio API)

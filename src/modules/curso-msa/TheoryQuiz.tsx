@@ -4,6 +4,7 @@ import { getNoteByPosition } from '../../core/utils/notesData';
 import { playSuccessSound, playErrorSound, startNote, stopNote } from '../../core/utils/audio';
 import { CheckCircle2, XCircle, ArrowRight, HelpCircle, RefreshCw, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { StaffSvgEngine } from '../../core/components';
 import { useQuizStore } from './stores/useQuizStore';
 
 const quizQuestions: QuizQuestion[] = [
@@ -204,9 +205,6 @@ export const TheoryQuiz: React.FC<TheoryQuizProps> = () => {
     const lineSpacing = 14;
     const getQuizY = (posIdx: number) => 300 - posIdx * lineSpacing;
 
-    const trebleLines = [22, 24, 26, 28, 30];
-    const bassLines = [10, 12, 14, 16, 18];
-
     return (
       <div className="flex flex-col items-center bg-white border-2 border-[#e5e5e5] rounded-2xl p-4 my-4 w-full shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-2 mb-3">
@@ -244,55 +242,23 @@ export const TheoryQuiz: React.FC<TheoryQuizProps> = () => {
           </button>
         </div>
 
-        {/* Mini SVG Staff */}
-        <svg width="400" height="340" className="bg-white border-2 border-[#e5e5e5] rounded-xl select-none max-w-full">
-          <rect x="0" y="20" width="400" height="110" fill="#e0e7ff" opacity="0.3" />
-          <rect x="0" y="190" width="400" height="110" fill="#f3e8ff" opacity="0.3" />
-
-          {trebleLines.map((idx) => {
-            const ly = getQuizY(idx);
-            return <line key={`q-tr-${idx}`} x1="40" x2="360" y1={ly} y2={ly} stroke="#cbd5e1" strokeWidth="1.2" />;
-          })}
-          {bassLines.map((idx) => {
-            const ly = getQuizY(idx);
-            return <line key={`q-bs-${idx}`} x1="40" x2="360" y1={ly} y2={ly} stroke="#cbd5e1" strokeWidth="1.2" />;
-          })}
-
-          <line x1="40" x2="360" y1={getQuizY(20)} y2={getQuizY(20)} stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="3 3" opacity="0.8" />
-
-          <text x="45" y={getQuizY(24) + 18} className="font-serif fill-indigo-600 text-4xl select-none pointer-events-none">𝄞</text>
-          <text x="45" y={getQuizY(16) + 12} className="font-serif fill-purple-600 text-3xl select-none pointer-events-none">𝄢</text>
-
-          {activeNote.positionIndex < 10 && (
-            <g>
-              {Array.from({ length: 5 }).map((_, i) => {
-                const ledgerIdx = 8 - i * 2;
-                if (activeNote.positionIndex <= ledgerIdx) {
-                  const ly = getQuizY(ledgerIdx);
-                  return <line key={`q-led-low-${ledgerIdx}`} x1="170" x2="230" y1={ly} y2={ly} stroke="#64748b" strokeWidth="2.2" />;
-                }
-                return null;
-              })}
-            </g>
-          )}
-
-          {activeNote.positionIndex > 30 && (
-            <g>
-              {[32, 34].map((ledgerIdx) => {
-                if (activeNote.positionIndex >= ledgerIdx) {
-                  const ly = getQuizY(ledgerIdx);
-                  return <line key={`q-led-hi-${ledgerIdx}`} x1="170" x2="230" y1={ly} y2={ly} stroke="#64748b" strokeWidth="2.2" />;
-                }
-                return null;
-              })}
-            </g>
-          )}
-
+        {/* Mini SVG Staff via StaffSvgEngine */}
+        <StaffSvgEngine
+          staffType="endecagrama"
+          width={400}
+          height={340}
+          viewBox="0 0 400 340"
+          className="bg-white border-2 border-[#e5e5e5] rounded-xl select-none max-w-full"
+          paddingX={40}
+          lineSpacing={14}
+          baseY={300}
+          activeNote={activeNote}
+        >
           <g transform={`translate(200, ${getQuizY(activeNote.positionIndex)})`}>
             <ellipse rx="11" ry="8" transform="rotate(-23)" fill="#334155" />
             <ellipse rx="6.5" ry="3" transform="rotate(-23)" fill="#ffffff" />
           </g>
-        </svg>
+        </StaffSvgEngine>
       </div>
     );
   };

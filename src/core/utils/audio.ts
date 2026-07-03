@@ -161,3 +161,84 @@ export function stopAllNotes() {
     console.warn('Stop all notes error:', error);
   }
 }
+
+export function initAudio() {
+  const ctx = getAudioContext();
+  if (ctx.state === 'suspended') {
+    ctx.resume();
+  }
+}
+
+export function playTone(freq: number, startTime?: number, duration = 0.5) {
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+    const now = startTime || ctx.currentTime;
+    gainNode.gain.setValueAtTime(0, now);
+    // Attack (smooth fade-in)
+    gainNode.gain.linearRampToValueAtTime(0.25, now + 0.02);
+    // Decay / Sustain
+    gainNode.gain.exponentialRampToValueAtTime(0.18, now + Math.min(0.1, duration * 0.4));
+    // Release
+    const releaseStart = now + duration - 0.08 > now ? now + duration - 0.08 : now;
+    gainNode.gain.setValueAtTime(0.18, releaseStart);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+    // Lowpass filter for warm organ timbre (1000Hz)
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1000, now);
+
+    osc.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + duration);
+  } catch (error) {
+    console.warn('PlayTone error:', error);
+  }
+}
+
+export function playLevelUpFanfare() {
+  try {
+    initAudio();
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+    const notes = [
+      { freq: 523.25, time: now, dur: 0.15 },        // C5
+      { freq: 659.25, time: now + 0.15, dur: 0.15 }, // E5
+      { freq: 783.99, time: now + 0.3, dur: 0.6 },   // G5
+    ];
+
+    notes.forEach((n) => {
+      playTone(n.freq, n.time, n.dur);
+    });
+  } catch (error) {
+    console.warn('Fanfare error:', error);
+  }
+}
+
+export function playRewardChord(rootFreq: number) {
+  try {
+    initAudio();
+    if (!rootFreq) return;
+    const ctx = getAudioContext();
+    const thirdFreq = rootFreq * 1.25992;
+    const fifthFreq = rootFreq * 1.49831;
+    const now = ctx.currentTime;
+    playTone(rootFreq, now, 0.6);
+    playTone(thirdFreq, now + 0.06, 0.6);
+    playTone(fifthFreq, now + 0.12, 0.6);
+  } catch (error) {
+    console.warn('RewardChord error:', error);
+  }
+}
+
+export const playError = playErrorSound;
+

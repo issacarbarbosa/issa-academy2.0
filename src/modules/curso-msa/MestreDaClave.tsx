@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pause, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getAudioContext } from '../../core/utils/audio';
+import { initAudio, playLevelUpFanfare, playRewardChord, playError } from '../../core/utils/audio';
 import { useMsaCourse } from '../../core/contexts/MsaCourseContext';
 
 interface MestreDaClaveProps {
@@ -74,107 +74,11 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
   ];
 
 
-  // Audio helpers
-  const initAudio = () => {
-    const ctx = getAudioContext();
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-  };
-
-  const playTone = (freq: number, startTime: number, duration = 0.5) => {
-    try {
-      const ctx = getAudioContext();
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      osc1.type = 'triangle';
-      osc1.frequency.value = freq;
-      osc2.type = 'sine';
-      osc2.frequency.value = freq;
-      
-      const now = startTime || ctx.currentTime;
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.15, now + 0.02); 
-      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-      
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + duration);
-      osc2.stop(now + duration);
-    } catch (e) {
-      console.warn('PlayTone error:', e);
-    }
-  };
-
-  const playLevelUpFanfare = () => {
-    try {
-      initAudio();
-      const ctx = getAudioContext();
-      const now = ctx.currentTime;
-      const notes = [
-        { freq: 523.25, time: now, dur: 0.15 },
-        { freq: 659.25, time: now + 0.15, dur: 0.15 },
-        { freq: 783.99, time: now + 0.3, dur: 0.6 }
-      ];
-
-      notes.forEach(n => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.value = n.freq;
-        gain.gain.setValueAtTime(0, n.time);
-        gain.gain.linearRampToValueAtTime(0.1, n.time + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, n.time + n.dur);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(n.time);
-        osc.stop(n.time + n.dur);
-      });
-    } catch (e) {
-      console.warn('Fanfare error:', e);
-    }
-  };
-
-  const playRewardChord = (pos: number) => {
-    try {
-      initAudio();
-      const rootFreq = posToFreq[pos];
-      if (!rootFreq) return;
-      const ctx = getAudioContext();
-      const thirdFreq = rootFreq * 1.25992;
-      const fifthFreq = rootFreq * 1.49831;
-      const now = ctx.currentTime;
-      playTone(rootFreq, now, 0.6);
-      playTone(thirdFreq, now + 0.06, 0.6);
-      playTone(fifthFreq, now + 0.12, 0.6);
-    } catch (e) {
-      console.warn('RewardChord error:', e);
-    }
-  };
-
-  const playError = () => {
-    try {
-      initAudio();
-      const ctx = getAudioContext();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(110, ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(80, ctx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.3);
-    } catch (e) {
-      console.warn('PlayError sound error:', e);
+  // Helper to play reward chord using global audio engine
+  const handleRewardChord = (pos: number) => {
+    const rootFreq = posToFreq[pos];
+    if (rootFreq) {
+      playRewardChord(rootFreq);
     }
   };
 
@@ -327,7 +231,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
         });
         
         hitsInLevelRef.current += 1;
-        playRewardChord(target.pos);
+        handleRewardChord(target.pos);
         target.marked = true;
         
         const drawY = staffCenterY + ((4 - target.pos) * (lineGap / 2));
@@ -669,6 +573,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
     return () => {
       cancelAnimationFrame(animationIdRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, level, activeSpeed, spawnInterval]);
 
   // Calculate XP-progress bar
