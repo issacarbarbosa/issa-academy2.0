@@ -105,6 +105,12 @@ export function playSuccessSound() {
 
       osc.start(now + index * 0.08);
       osc.stop(now + index * 0.08 + 0.4);
+
+      // Cleanup: disconnect nodes after oscillator stops to prevent AudioNode leak
+      osc.addEventListener('ended', () => {
+        osc.disconnect();
+        gainNode.disconnect();
+      });
     });
   } catch (error) {
     console.warn('Success sound error:', error);
@@ -145,6 +151,14 @@ export function playErrorSound() {
     osc2.start(now);
     osc1.stop(now + 0.4);
     osc2.stop(now + 0.4);
+
+    // Cleanup: disconnect nodes after oscillators stop to prevent AudioNode leak
+    osc2.addEventListener('ended', () => {
+      osc1.disconnect();
+      osc2.disconnect();
+      filter.disconnect();
+      gainNode.disconnect();
+    });
   } catch (error) {
     console.warn('Error sound error:', error);
   }
@@ -200,6 +214,13 @@ export function playTone(freq: number, startTime?: number, duration = 0.5) {
 
     osc.start(now);
     osc.stop(now + duration);
+
+    // Cleanup: disconnect nodes after oscillator stops to prevent AudioNode leak
+    osc.addEventListener('ended', () => {
+      osc.disconnect();
+      filter.disconnect();
+      gainNode.disconnect();
+    });
   } catch (error) {
     console.warn('PlayTone error:', error);
   }

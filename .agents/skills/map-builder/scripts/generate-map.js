@@ -10,6 +10,23 @@ const OUTPUT_FILE = path.join(ROOT_DIR, 'MAPA_RAIZ.md');
 
 const EXCLUDE_DIRS = ['node_modules', '.git', 'dist', 'build', '.gemini'];
 
+const DESCRIPTIONS = {
+  '.agents': 'Configurações de agentes IA, skills especializadas e regras de projeto',
+  'public': 'Assets estáticos musicais, imagens e ícones do PWA',
+  'src': 'Código-fonte da aplicação React/TypeScript',
+  'src/core': 'Componentes centrais, hooks, utilitários e motor de áudio',
+  'src/core/components': 'Componentes UI reutilizáveis (ex: StaffSvgEngine, OrientationGuard)',
+  'src/core/utils': 'Motores lógicos e utilitários (ex: audio.ts)',
+  'src/modules': 'Módulos de funcionalidades do projeto',
+  'src/modules/curso-msa': 'Trilha digital didática do MSA (slideshows, simulados e jogos)',
+  'src/modules/curso-msa/components': 'Componentes da trilha MSA (LessonSlideshow, PhaseCard, etc.)',
+  'src/modules/curso-msa/questions': 'Bancos de questões Zod em JSON (q_f01 a q_f05)',
+  'src/modules/curso-msa/stores': 'Gerenciamento de estado global via Zustand (useQuizStore)',
+  'MAPA_RAIZ.md': 'Mapa arquitetural físico do projeto',
+  'FLUXO_USUARIO.md': 'Mapa de fluxo UX e navegação',
+  'ROADMAP.md': 'Controle de pendências e histórico do projeto'
+};
+
 function getFolderTree(dirPath, relativePath = '', prefix = '') {
   let markdown = '';
   const items = fs.readdirSync(dirPath);

@@ -5,8 +5,6 @@ globs: *.tsx, *.css
 
 # Regra de Design e Interface: Blueprint Visual do Issa Academy
 
-Esta regra é "Always On" e define os padrões de paletas de cores, tipografia, bordas, animações e responsividade Mobile-First da aplicação.
-
 ---
 
 ## 🎨 Sistema de Design e Cores (Tema Claro Juicy/Duolingo)

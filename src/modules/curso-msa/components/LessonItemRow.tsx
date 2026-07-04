@@ -14,7 +14,7 @@ export interface LessonItemRowProps {
   onBackToMain: () => void;
 }
 
-export const LessonItemRow: React.FC<LessonItemRowProps> = ({
+export const LessonItemRow: React.FC<LessonItemRowProps> = React.memo(({
   item,
   idx,
   phaseNumber,
@@ -289,4 +289,4 @@ export const LessonItemRow: React.FC<LessonItemRowProps> = ({
       )}
     </div>
   );
-};
+});

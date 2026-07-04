@@ -12,6 +12,41 @@ interface SimuladoMsaProps {
   onBack?: () => void;
 }
 
+export function formatTimeSpent(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+export function computeQuizResult(score: number, totalQuestions: number, randomValue = Math.random()): { img: string; msg: string; pct: number } {
+  const pct = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+  let img = '';
+  let msg = '';
+  if (pct === 100) {
+    img = '/assets/fufu-comemorando-troféu-gabarito.png';
+    msg = 'Perfeito! Você gabaritou o Simulado!';
+  } else if (pct >= 80) {
+    img = '/assets/fufu-comemorando-troféu-G-clave.png';
+    msg = 'Muito bom! Você está super preparado para a oficialização!';
+  } else if (pct >= 50) {
+    const midImgs = [
+      '/assets/fufu-erro-presente.png',
+      '/assets/fufu-erro-encorajador.png'
+    ];
+    img = midImgs[Math.floor(randomValue * midImgs.length)];
+    msg = 'Bom esforço! Mais alguns estudos e você chega lá!';
+  } else {
+    const lowImgs = [
+      '/assets/fufu-erro-não-desista.png',
+      '/assets/fufu-erro-carinho.png',
+      '/assets/fufu-erro-acontece.png'
+    ];
+    img = lowImgs[Math.floor(randomValue * lowImgs.length)];
+    msg = 'Não desanime! Teoria musical exige prática. Estude e tente novamente!';
+  }
+  return { img, msg, pct };
+}
+
 export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
   const navigate = useNavigate();
   const handleBack = onBack || (() => navigate('/'));
@@ -141,36 +176,9 @@ export function SimuladoMsa({ onBack }: SimuladoMsaProps) {
     } else {
       // Quiz finished, show results
       const totalTime = Math.floor((Date.now() - quizStartTime) / 1000);
-      const minutes = Math.floor(totalTime / 60);
-      const seconds = totalTime % 60;
-      setTimeSpentString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      setTimeSpentString(formatTimeSpent(totalTime));
 
-      const pct = Math.round((score / questions.length) * 100);
-      
-      let img = '';
-      let msg = '';
-      if (pct === 100) {
-        img = '/assets/fufu-comemorando-troféu-gabarito.png';
-        msg = 'Perfeito! Você gabaritou o Simulado!';
-      } else if (pct >= 80) {
-        img = '/assets/fufu-comemorando-troféu-G-clave.png';
-        msg = 'Muito bom! Você está super preparado para a oficialização!';
-      } else if (pct >= 50) {
-        const midImgs = [
-          '/assets/fufu-erro-presente.png',
-          '/assets/fufu-erro-encorajador.png'
-        ];
-        img = midImgs[Math.floor(Math.random() * midImgs.length)];
-        msg = 'Bom esforço! Mais alguns estudos e você chega lá!';
-      } else {
-        const lowImgs = [
-          '/assets/fufu-erro-não-desista.png',
-          '/assets/fufu-erro-carinho.png',
-          '/assets/fufu-erro-acontece.png'
-        ];
-        img = lowImgs[Math.floor(Math.random() * lowImgs.length)];
-        msg = 'Não desanime! Teoria musical exige prática. Estude e tente novamente!';
-      }
+      const { img, msg } = computeQuizResult(score, questions.length);
 
       setResultImg(img);
       setResultMsg(msg);

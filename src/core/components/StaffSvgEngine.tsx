@@ -165,10 +165,10 @@ export const StaffSvgEngine: React.FC<StaffSvgEngineProps> = ({
       {/* Clef Symbols */}
       {showClefs && drawTreble && (
         <text
-          x={paddingX - 85}
+          x={paddingX + lineSpacing * 0.6}
           y={getY(24) + lineSpacing * 1.5}
           className="font-serif fill-indigo-600 select-none pointer-events-none"
-          style={{ fontSize: `${lineSpacing * 5.6}px` }}
+          style={{ fontSize: `${lineSpacing * 10.0}px` }}
         >
           𝄞
         </text>
@@ -176,10 +176,10 @@ export const StaffSvgEngine: React.FC<StaffSvgEngineProps> = ({
 
       {showClefs && drawBass && (
         <text
-          x={paddingX - 85}
-          y={getY(16) + lineSpacing * 0.8}
+          x={paddingX + lineSpacing * 0.6}
+          y={getY(16) + lineSpacing * 4.5}
           className="font-serif fill-purple-600 select-none pointer-events-none"
-          style={{ fontSize: `${lineSpacing * 4.2}px` }}
+          style={{ fontSize: `${lineSpacing * 10.0}px` }}
         >
           𝄢
         </text>
@@ -187,10 +187,10 @@ export const StaffSvgEngine: React.FC<StaffSvgEngineProps> = ({
 
       {showAltoClef && (
         <text
-          x={paddingX - 85}
-          y={getY(20) + lineSpacing * 0.8}
+          x={staffType === 'endecagrama' ? paddingX + lineSpacing * 8 : paddingX + lineSpacing * 0.6}
+          y={getY(20) + lineSpacing * 3.80}
           className="font-serif fill-amber-600 select-none pointer-events-none animate-fade-in"
-          style={{ fontSize: `${lineSpacing * 4.2}px` }}
+          style={{ fontSize: `${lineSpacing * 10.0}px` }}
         >
           𝄡
         </text>

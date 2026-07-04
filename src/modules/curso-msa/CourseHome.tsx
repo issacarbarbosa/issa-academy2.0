@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ArrowLeft, Play, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMsaCourse } from '../../core/contexts/MsaCourseContext';
@@ -68,21 +68,13 @@ export function CourseHome({
     if (found) break;
   }
 
-  const handlePhaseClick = (phaseNum: number) => {
-    if (selectedPhaseNum === phaseNum) {
-      setSelectedPhaseNum(null);
-    } else {
-      setSelectedPhaseNum(phaseNum);
-    }
-  };
+  const handlePhaseClick = useCallback((phaseNum: number) => {
+    setSelectedPhaseNum((prev) => (prev === phaseNum ? null : phaseNum));
+  }, []);
 
-  const handleToggleActiveItem = (itemId: string) => {
-    if (activeItemId === itemId) {
-      setActiveItemId(null);
-    } else {
-      setActiveItemId(itemId);
-    }
-  };
+  const handleToggleActiveItem = useCallback((itemId: string) => {
+    setActiveItemId((prev) => (prev === itemId ? null : itemId));
+  }, []);
 
   return (
     <div

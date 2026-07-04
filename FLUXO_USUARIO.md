@@ -36,8 +36,8 @@ graph TD
     subgraph S1 ["Sala de Aula (Navegação Interna sem recarregar)"]
         F --> F1["🎬 Aba: Assistir<br>(Vídeo YouTube NetworkOnly)"]
         F --> F2["📖 Aba: Resumo Teórico<br>(Pontos Chave Offline)"]
-        F --> F3["🧪 Aba: Praticar / Quiz<br>(Exercícios de Fixação)"]
-        F3 -- "Se for Fase 3.1" --> F4["🎹 Slideshow Interativo<br>(Piano & Pauta Integrados)"]
+        F --> F3["🧪 Aba: Praticar / Quiz<br>(Exercícios & Mini Pauta via StaffSvgEngine)"]
+        F3 -- "Se for Fase 3.1" --> F4["🎹 Slideshow Interativo<br>(Endecagrama 11 Linhas via StaffSvgEngine)"]
     end
     class F1,F2,F3,F4 state;
 
@@ -52,8 +52,8 @@ graph TD
 
     %% SUB-FLUXO: SIMULADO MSA (Máquina de Estados)
     subgraph S3 ["Simulado (Zustand State Machine)"]
-        E --> H1["📋 Menu de Seleção<br>(Escolha de Períodos 1 ou 2)"]
-        H1 -- "Iniciar Simulado" --> H2["⏳ Loading & Validação<br>(Zod blindando JSONs offline)"]
+        E --> H1["📋 Menu de Seleção<br>(Períodos 1 e 2 de 5 Bancos JSON Zod)"]
+        H1 -- "Iniciar Simulado" --> H2["⏳ Loading & Validação<br>(Zod blindando q_f01 a q_f05 offline)"]
         H2 --> H3["❓ Quiz Ativo (20 Questões)<br>(Cronômetro & Reações de Áudio)"]
         H3 -- "Concluir" --> H4["🏆 Tela de Resultados<br>(Troféu Fufu, % Precisão & Revisão de Erros)"]
     end
@@ -72,9 +72,9 @@ graph TD
 | Elemento / Cor | Significado Arquitetural | Exemplo no Projeto |
 | :--- | :--- | :--- |
 | **🟦 Rotas da SPA (Azul)** | Telas de nível superior configuradas em `App.tsx` com `React.lazy` e Code Splitting. | `/curso`, `/simulado`, `/mestre-da-clave` |
-| **🟩 Ambientes Interativos (Verde)** | Telas ou modais de alta interatividade que utilizam motores visuais ou síntese de áudio. | Gameplay do Mestre da Clave, Slideshow do Endecagrama |
+| **🟩 Ambientes Interativos (Verde)** | Telas ou modais de alta interatividade que utilizam motores visuais, síntese de áudio ou o motor vetorial `<StaffSvgEngine />`. | Gameplay do Mestre da Clave, Slideshow do Endecagrama |
 | **🟥 Guardas de UX (Vermelho Tracejado)** | Bloqueios condicionais de interface que previnem experiências ruins no celular. | Componente `<OrientationGuard />` bloqueando orientação retrato na pauta |
 | **⬛ Estados e Abas (Cinza)** | Sub-telas controladas por estado interno sem transição de URL na rota ativa. | Abas da Sala de Aula, Fases de carregamento do Simulado |
 
 ---
-*Mapa atualizado automaticamente pela skill map-builder do agente Antigravity.*
+*Mapa atualizado automaticamente em: 03/07/2026 pela skill map-builder do agente Antigravity.*

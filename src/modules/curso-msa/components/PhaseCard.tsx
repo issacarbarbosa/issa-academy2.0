@@ -14,7 +14,7 @@ export interface PhaseCardProps {
   onBackToMain: () => void;
 }
 
-export const PhaseCard: React.FC<PhaseCardProps> = ({
+export const PhaseCard: React.FC<PhaseCardProps> = React.memo(({
   phase,
   isSelected,
   onPhaseClick,
@@ -122,4 +122,4 @@ export const PhaseCard: React.FC<PhaseCardProps> = ({
       )}
     </div>
   );
-};
+});

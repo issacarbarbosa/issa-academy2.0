@@ -4,7 +4,7 @@ Este arquivo foi gerado automaticamente e apresenta a estrutura de diretórios e
 
 ```text
 issa-academy/
-├── 📁 .agents/
+├── 📁 .agents/ # Configurações de agentes IA, skills especializadas e regras de projeto
 │   ├── 📁 hooks/
 │   │   └── 📄 run-linter.js
 │   ├── 📁 rules/
@@ -34,8 +34,8 @@ issa-academy/
 │   │       └── 📄 SKILL.md
 │   ├── 📄 hooks.json
 │   └── 📄 mcp_config.json
-├── 📁 public/ # Assets estáticos públicos (Imagens, Ícones, Som)
-│   └── 📁 assets/ # Imagens e mídias do mascote Fufu e curso
+├── 📁 public/ # Assets estáticos musicais, imagens e ícones do PWA
+│   └── 📁 assets/
 │       ├── 📄 Issa_Academy-Fufu.png
 │       ├── 📄 fufu-acerto-aplausos.png
 │       ├── 📄 fufu-acerto-esperto.png
@@ -67,32 +67,32 @@ issa-academy/
 │       ├── 📄 fufu-violino.png
 │       ├── 📄 social-home.png
 │       └── 📄 social-whatsapp.png
-├── 📁 src/ # Código-fonte principal da aplicação
-│   ├── 📁 core/ # Lógicas globais fundamentais (Contextos, Hooks, Utils)
-│   │   ├── 📁 components/
+├── 📁 src/ # Código-fonte da aplicação React/TypeScript
+│   ├── 📁 core/ # Componentes centrais, hooks, utilitários e motor de áudio
+│   │   ├── 📁 components/ # Componentes UI reutilizáveis (ex: StaffSvgEngine, OrientationGuard)
 │   │   │   ├── 📄 OrientationGuard.tsx
 │   │   │   ├── 📄 StaffSvgEngine.tsx
 │   │   │   └── 📄 index.ts
-│   │   ├── 📁 contexts/ # Contextos do React para gerenciamento de estado global
+│   │   ├── 📁 contexts/
 │   │   │   └── 📄 MsaCourseContext.tsx
-│   │   ├── 📁 hooks/ # Hooks customizados (ex: LocalStorage)
+│   │   ├── 📁 hooks/
 │   │   │   ├── 📄 useLocalStorage.ts
 │   │   │   └── 📄 useMobileOrientation.ts
-│   │   ├── 📁 utils/ # Utilitários gerais (Síntese de áudio, frequências)
+│   │   ├── 📁 utils/ # Motores lógicos e utilitários (ex: audio.ts)
 │   │   │   ├── 📄 audio.ts
 │   │   │   ├── 📄 notesData.test.ts
 │   │   │   └── 📄 notesData.ts
 │   │   └── 📄 types.ts
-│   ├── 📁 modules/ # Módulos independentes de domínio de negócios
-│   │   └── 📁 curso-msa/ # Módulo de teoria musical e simulado do MSA
-│   │       ├── 📁 components/ # Componentes modulares extraídos do App.tsx
+│   ├── 📁 modules/ # Módulos de funcionalidades do projeto
+│   │   └── 📁 curso-msa/ # Trilha digital didática do MSA (slideshows, simulados e jogos)
+│   │       ├── 📁 components/ # Componentes da trilha MSA (LessonSlideshow, PhaseCard, etc.)
 │   │       │   ├── 📄 LessonItemRow.tsx
 │   │       │   ├── 📄 LessonSlideshow.tsx
 │   │       │   ├── 📄 PhaseCard.tsx
 │   │       │   └── 📄 WelcomeHome.tsx
 │   │       ├── 📁 content/
 │   │       │   └── 📄 msaPhasesManifest.ts
-│   │       ├── 📁 questions/ # Banco de questões do simulado (JSONs)
+│   │       ├── 📁 questions/ # Bancos de questões Zod em JSON (q_f01 a q_f05)
 │   │       │   ├── 📄 q_f01.json
 │   │       │   ├── 📄 q_f02.json
 │   │       │   ├── 📄 q_f03.json
@@ -100,13 +100,14 @@ issa-academy/
 │   │       │   ├── 📄 q_f05.json
 │   │       │   ├── 📄 schema.test.ts
 │   │       │   └── 📄 schema.ts
-│   │       ├── 📁 stores/
+│   │       ├── 📁 stores/ # Gerenciamento de estado global via Zustand (useQuizStore)
 │   │       │   ├── 📄 useQuizStore.test.ts
 │   │       │   └── 📄 useQuizStore.ts
 │   │       ├── 📄 CourseHome.tsx
 │   │       ├── 📄 EndecagramaStaff.tsx
 │   │       ├── 📄 MestreDaClave.tsx
 │   │       ├── 📄 PianoKeyboard.tsx
+│   │       ├── 📄 SimuladoMsa.test.ts
 │   │       ├── 📄 SimuladoMsa.tsx
 │   │       ├── 📄 TheoryQuiz.tsx
 │   │       └── 📄 lessonsData.ts
@@ -117,9 +118,9 @@ issa-academy/
 │   └── 📄 main.tsx
 ├── 📄 .env.example
 ├── 📄 .gitignore
-├── 📄 FLUXO_USUARIO.md
-├── 📄 MAPA_RAIZ.md
-├── 📄 ROADMAP.md
+├── 📄 FLUXO_USUARIO.md # Mapa de fluxo UX e navegação
+├── 📄 MAPA_RAIZ.md # Mapa arquitetural físico do projeto
+├── 📄 ROADMAP.md # Controle de pendências e histórico do projeto
 ├── 📄 eslint.config.js
 ├── 📄 index.html
 ├── 📄 metadata.json
@@ -131,4 +132,4 @@ issa-academy/
 ```
 
 ---
-*Gerado automaticamente em: 03/07/2026, 19:27:03*
+*Gerado automaticamente em: 03/07/2026, 22:02:49*

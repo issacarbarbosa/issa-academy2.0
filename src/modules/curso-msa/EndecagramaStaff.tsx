@@ -3,6 +3,7 @@ import { MusicalNote } from '../../core/types';
 import { getNoteByPosition } from '../../core/utils/notesData';
 import { Volume2, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'motion/react';
+import { StaffSvgEngine, getStaffY, getPositionFromStaffY } from '../../core/components';
 import { PianoKeyboard } from './PianoKeyboard';
 
 interface EndecagramaStaffProps {
@@ -11,6 +12,13 @@ interface EndecagramaStaffProps {
   playSound: (freq: number) => void;
   stopSound: () => void;
 }
+
+// Layout constants matching StaffSvgEngine defaults
+const WIDTH = 800;
+const HEIGHT = 510;
+const PADDING_X = 120;
+const LINE_SPACING = 16;
+const BASE_Y = 470;
 
 export const EndecagramaStaff: React.FC<EndecagramaStaffProps> = ({
   selectedNote,
@@ -23,133 +31,47 @@ export const EndecagramaStaff: React.FC<EndecagramaStaffProps> = ({
   const [showGoldenBridge, setShowGoldenBridge] = useState(true);
   const [showAltoClef, setShowAltoClef] = useState(false);
 
-  // SVG dimensions
-  const height = 510;
-  const width = 800;
-  const paddingX = 120;
+  const getY = (index: number) => getStaffY(index, BASE_Y, LINE_SPACING);
 
-  // Map positionIndex to Y coordinate
-  const getYCoordinate = (positionIndex: number): number => {
-    return 470 - (positionIndex - 6) * 16;
-  };
-
-  // Map Y coordinate back to positionIndex
-  const getPositionFromY = (y: number): number => {
-    const calculatedIndex = Math.round((470 - y) / 16) + 6;
-    return Math.max(6, Math.min(34, calculatedIndex));
-  };
-
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!svgRef.current) return;
     setIsDragging(true);
     svgRef.current.setPointerCapture(e.pointerId);
     updateNoteFromPointer(e);
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
+  const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!isDragging) return;
     updateNoteFromPointer(e);
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const handlePointerUp = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!isDragging) return;
     setIsDragging(false);
     if (svgRef.current) {
       svgRef.current.releasePointerCapture(e.pointerId);
     }
     stopSound();
-    // Play sound once on release to solidify
     playSound(selectedNote.frequency);
     setTimeout(() => stopSound(), 800);
   };
 
-  const updateNoteFromPointer = (e: React.PointerEvent) => {
+  const updateNoteFromPointer = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
     const clientY = e.clientY - rect.top;
-    
-    // Convert client Y to SVG viewport Y
-    const svgY = (clientY / rect.height) * height;
-    const newIndex = getPositionFromY(svgY);
-    const newNote = getNoteByPosition(newIndex);
-    
+    const svgY = (clientY / rect.height) * HEIGHT;
+    const newIndex = getPositionFromStaffY(svgY, BASE_Y, LINE_SPACING);
+    const clampedIndex = Math.max(6, Math.min(34, newIndex));
+    const newNote = getNoteByPosition(clampedIndex);
+
     if (newNote.id !== selectedNote.id) {
       onNoteChange(newNote);
       playSound(newNote.frequency);
     }
   };
 
-  // Lines to draw for Treble Clef (Sol) - 5 lines
-  const trebleLines = [22, 24, 26, 28, 30]; // positionIndices
-  // Lines to draw for Bass Clef (Fá) - 5 lines
-  const bassLines = [10, 12, 14, 16, 18]; // positionIndices
-
-  // Draw ledger lines dynamically for a note
-  const renderLedgerLines = (note: MusicalNote) => {
-    const lines = [];
-    const index = note.positionIndex;
-
-    // Ledger lines below Bass Clef (index < 10)
-    if (index < 10) {
-      for (let i = 8; i >= 0; i -= 2) {
-        if (index <= i) {
-          const ly = getYCoordinate(i);
-          lines.push(
-            <line
-              key={`ledger-low-${i}`}
-              x1={paddingX + 220}
-              x2={paddingX + 320}
-              y1={ly}
-              y2={ly}
-              stroke="#4b5563"
-              strokeWidth="2.5"
-            />
-          );
-        }
-      }
-    }
-
-    // Central Ledger Line (Dó 3 / index 20)
-    if (index === 20 && !showGoldenBridge) {
-      const ly = getYCoordinate(20);
-      lines.push(
-        <line
-          key="ledger-central"
-          x1={paddingX + 220}
-          x2={paddingX + 320}
-          y1={ly}
-          y2={ly}
-          stroke="#ca8a04"
-          strokeWidth="3"
-          strokeDasharray="none"
-        />
-      );
-    }
-
-    // Ledger lines above Treble Clef (index > 30)
-    if (index > 30) {
-      for (let i = 32; i <= 34; i += 2) {
-        if (index >= i) {
-          const ly = getYCoordinate(i);
-          lines.push(
-            <line
-              key={`ledger-high-${i}`}
-              x1={paddingX + 220}
-              x2={paddingX + 320}
-              y1={ly}
-              y2={ly}
-              stroke="#4b5563"
-              strokeWidth="2.5"
-            />
-          );
-        }
-      }
-    }
-
-    return lines;
-  };
-
-  const currentY = getYCoordinate(selectedNote.positionIndex);
+  const currentY = getY(selectedNote.positionIndex);
 
   return (
     <div className="flex flex-col items-center bg-slate-900/50 border border-slate-800 rounded-xl p-3 pb-2 shadow-xl w-full" id="endecagrama-container">
@@ -204,47 +126,32 @@ export const EndecagramaStaff: React.FC<EndecagramaStaffProps> = ({
         </div>
       </div>
 
-      {/* Interactive Staff SVG */}
+      {/* Interactive Staff via StaffSvgEngine */}
       <div className="relative w-full overflow-x-auto py-2 flex justify-center bg-white rounded-xl border-4 border-slate-950 shadow-inner">
-        <svg
-          ref={svgRef}
-          viewBox="0 0 800 510"
-          className="select-none cursor-pointer touch-none w-full max-h-[50vh] md:max-h-[55vh] min-h-[280px] aspect-[800/510]"
+        <StaffSvgEngine
+          staffType="endecagrama"
+          width={WIDTH}
+          height={HEIGHT}
+          viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+          showMiddleC={showGoldenBridge}
+          showAltoClef={showAltoClef}
+          paddingX={PADDING_X}
+          lineSpacing={LINE_SPACING}
+          baseY={BASE_Y}
+          activeNote={selectedNote}
+          svgRef={svgRef}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
         >
-          {/* Background Highlight Regions */}
-          {/* Treble Region (Sol) */}
-          <rect
-            x={paddingX - 40}
-            y={66}
-            width={width - paddingX * 2 + 80}
-            height={154}
-            fill="#eff6ff"
-            rx="8"
-            opacity="0.6"
-          />
-
-          {/* Background Region (Fá) */}
-          <rect
-            x={paddingX - 40}
-            y={262}
-            width={width - paddingX * 2 + 80}
-            height={160}
-            fill="#faf5ff"
-            rx="8"
-            opacity="0.6"
-          />
-
           {/* Deep Tuba Highlight if note is in deep register */}
           {selectedNote.positionIndex < 10 && (
             <motion.rect
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.15 }}
-              x={paddingX - 40}
+              x={PADDING_X - 40}
               y={422}
-              width={width - paddingX * 2 + 80}
+              width={WIDTH - PADDING_X * 2 + 80}
               height={72}
               fill="#ef4444"
               rx="8"
@@ -252,82 +159,16 @@ export const EndecagramaStaff: React.FC<EndecagramaStaffProps> = ({
             />
           )}
 
-          {/* Draw Treble Clef Lines (Sol) */}
-          {trebleLines.map((index) => {
-            const ly = getYCoordinate(index);
-            return (
-              <line
-                key={`treble-line-${index}`}
-                x1={paddingX}
-                x2={width - paddingX}
-                y1={ly}
-                y2={ly}
-                stroke="#1e293b"
-                strokeWidth="1.5"
-              />
-            );
-          })}
-
-          {/* Draw Bass Clef Lines (Fá) */}
-          {bassLines.map((index) => {
-            const ly = getYCoordinate(index);
-            return (
-              <line
-                key={`bass-line-${index}`}
-                x1={paddingX}
-                x2={width - paddingX}
-                y1={ly}
-                y2={ly}
-                stroke="#1e293b"
-                strokeWidth="1.5"
-              />
-            );
-          })}
-
-          {/* Draw Golden Bridge Central Line (Dó 3) */}
-          {showGoldenBridge && (
-            <g>
-              <line
-                x1={paddingX}
-                x2={width - paddingX}
-                y1={getYCoordinate(20)}
-                y2={getYCoordinate(20)}
-                stroke="#d97706"
-                strokeWidth="2.5"
-                strokeDasharray="4 4"
-                className="animate-pulse"
-              />
-              {/* Golden Line Halo Glow */}
-              <line
-                x1={paddingX}
-                x2={width - paddingX}
-                y1={getYCoordinate(20)}
-                y2={getYCoordinate(20)}
-                stroke="#f59e0b"
-                strokeWidth="8"
-                opacity="0.15"
-              />
-              <text
-                x={width - paddingX + 15}
-                y={getYCoordinate(20) + 4}
-                fill="#b45309"
-                className="text-[10px] font-semibold font-mono"
-              >
-                Dó Central (Dó3)
-              </text>
-            </g>
-          )}
-
-          {/* Draw Alto Clef Lines overlay (Clave de Dó 3ª Linha) */}
+          {/* Alto Clef Lines overlay (5 purple semi-transparent lines) */}
           {showAltoClef && (
             <g className="opacity-85">
               {[16, 18, 20, 22, 24].map((index) => {
-                const ly = getYCoordinate(index);
+                const ly = getY(index);
                 return (
                   <line
                     key={`alto-overlay-${index}`}
-                    x1={paddingX + 80}
-                    x2={width - paddingX - 80}
+                    x1={PADDING_X + 80}
+                    x2={WIDTH - PADDING_X - 80}
                     y1={ly}
                     y2={ly}
                     stroke="#a855f7"
@@ -339,46 +180,27 @@ export const EndecagramaStaff: React.FC<EndecagramaStaffProps> = ({
             </g>
           )}
 
-          {/* Clef Graphical Symbols */}
-          <text
-            x={paddingX + 10}
-            y={getYCoordinate(24) + 25}
-            className="font-serif select-none pointer-events-none fill-blue-800 text-[200px]"
-          >
-            𝄞
-          </text>
-
-          <text
-            x={paddingX + 15}
-            y={getYCoordinate(16) + 68}
-            className="font-serif select-none pointer-events-none fill-purple-800 text-[150px]"
-          >
-            𝄢
-          </text>
-
-          {showAltoClef && (
+          {/* Golden Bridge label (right side) */}
+          {showGoldenBridge && (
             <text
-              x={paddingX + 130}
-              y={getYCoordinate(20) + 9}
-              dominantBaseline="central"
-              className="font-serif select-none pointer-events-none fill-purple-600 text-[180px]"
+              x={WIDTH - PADDING_X + 15}
+              y={getY(20) + 4}
+              fill="#b45309"
+              className="text-[10px] font-semibold font-mono"
             >
-              𝄡
+              Dó Central (Dó3)
             </text>
           )}
 
           {/* Bar lines at the ends of the staff */}
-          <line x1={paddingX} x2={paddingX} y1={86} y2={406} stroke="#1e293b" strokeWidth="2.5" />
-          <line x1={width - paddingX} x2={width - paddingX} y1={86} y2={406} stroke="#1e293b" strokeWidth="2.5" />
-          <line x1={width - paddingX - 6} x2={width - paddingX - 6} y1={86} y2={406} stroke="#1e293b" strokeWidth="5" />
-
-          {/* Ledger lines passing through the active note */}
-          {renderLedgerLines(selectedNote)}
+          <line x1={PADDING_X} x2={PADDING_X} y1={86} y2={406} stroke="#1e293b" strokeWidth="2.5" />
+          <line x1={WIDTH - PADDING_X} x2={WIDTH - PADDING_X} y1={86} y2={406} stroke="#1e293b" strokeWidth="2.5" />
+          <line x1={WIDTH - PADDING_X - 6} x2={WIDTH - PADDING_X - 6} y1={86} y2={406} stroke="#1e293b" strokeWidth="5" />
 
           {/* Highlight Line for Active Note Position */}
           <line
-            x1={paddingX}
-            x2={width - paddingX}
+            x1={PADDING_X}
+            x2={WIDTH - PADDING_X}
             y1={currentY}
             y2={currentY}
             stroke={selectedNote.clef === 'central' ? '#f59e0b' : selectedNote.clef === 'sol' ? '#3b82f6' : '#a855f7'}
@@ -390,14 +212,14 @@ export const EndecagramaStaff: React.FC<EndecagramaStaffProps> = ({
           {/* Drag Instruction Overlay */}
           {!isDragging && (
             <g opacity="0.45" className="pointer-events-none">
-              <text x={width / 2} y={35} textAnchor="middle" fill="#475569" className="text-xs font-medium">
+              <text x={WIDTH / 2} y={35} textAnchor="middle" fill="#475569" className="text-xs font-medium">
                 ↕ Arraste a nota para mudar a altura ↕
               </text>
             </g>
           )}
 
           {/* Note Head */}
-          <g transform={`translate(${width / 2}, ${currentY})`}>
+          <g transform={`translate(${WIDTH / 2}, ${currentY})`}>
             <circle
               r="24"
               fill={selectedNote.clef === 'central' ? '#fbbf24' : selectedNote.clef === 'sol' ? '#60a5fa' : '#c084fc'}
@@ -423,7 +245,7 @@ export const EndecagramaStaff: React.FC<EndecagramaStaffProps> = ({
           </g>
  
           {/* Note Label floating right next to it */}
-          <g transform={`translate(${width / 2 + 35}, ${currentY + 5})`}>
+          <g transform={`translate(${WIDTH / 2 + 35}, ${currentY + 5})`}>
             <rect
               x="-4"
               y="-14"
@@ -442,7 +264,7 @@ export const EndecagramaStaff: React.FC<EndecagramaStaffProps> = ({
               {selectedNote.name} {selectedNote.octave >= 0 ? selectedNote.octave : `-${Math.abs(selectedNote.octave)}`}
             </text>
           </g>
-        </svg>
+        </StaffSvgEngine>
       </div>
  
       {/* Integrated compact Piano Keyboard */}

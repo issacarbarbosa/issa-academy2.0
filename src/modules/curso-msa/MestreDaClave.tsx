@@ -1,9 +1,103 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Pause, Smartphone } from 'lucide-react';
+import { Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { initAudio, playLevelUpFanfare, playRewardChord, playError } from '../../core/utils/audio';
 import { useMsaCourse } from '../../core/contexts/MsaCourseContext';
+
+// --- Game domain types (module-level for stable identity & proper typing) ---
+
+interface FloatText {
+  x: number;
+  y: number;
+  text: string;
+  color: string;
+  life: number;
+  speedY: number;
+}
+
+class GameParticle {
+  x: number;
+  y: number;
+  color: string;
+  size: number;
+  speedX: number;
+  speedY: number;
+  life: number;
+  lifeDecay: number;
+  gravity: number;
+  isStar: boolean;
+  rotation: number;
+  rotationSpeed: number;
+
+  constructor(x: number, y: number, color: string, speedX?: number, speedY?: number, lifeDecay?: number, gravity = 350) {
+    this.x = x;
+    this.y = y;
+    this.color = color;
+    this.size = Math.random() * 5 + 3.5;
+    this.speedX = speedX !== undefined ? speedX : (Math.random() * 300 - 150);
+    this.speedY = speedY !== undefined ? speedY : (Math.random() * -320 - 120);
+    this.life = 1.0;
+    this.lifeDecay = lifeDecay !== undefined ? lifeDecay : (Math.random() * 0.45 + 0.45);
+    this.gravity = gravity;
+    this.isStar = Math.random() > 0.45;
+    this.rotation = Math.random() * Math.PI * 2;
+    this.rotationSpeed = (Math.random() - 0.5) * 6;
+  }
+  update(dt: number) {
+    this.x += this.speedX * dt;
+    this.y += this.speedY * dt;
+    this.speedY += this.gravity * dt;
+    this.rotation += this.rotationSpeed * dt;
+    this.life -= this.lifeDecay * dt;
+  }
+}
+
+const NOTE_COLORS: Record<string, string> = {
+  'Dó': '#e74c3c', 'Ré': '#e67e22', 'Mi': '#f1c40f',
+  'Fá': '#2ecc71', 'Sol': '#3498db', 'Lá': '#9b59b6', 'Si': '#e84393'
+};
+
+const NOTE_DARK_COLORS: Record<string, string> = {
+  'Dó': '#781005', 'Ré': '#823c02', 'Mi': '#8f7100',
+  'Fá': '#11592c', 'Sol': '#114a73', 'Lá': '#4d2361', 'Si': '#85104a'
+};
+
+const POS_TO_FREQ: Record<string, number> = {
+  '-3': 246.94, '-2': 261.63, '-1': 293.66, '0': 329.63,
+  '1': 349.23, '2': 392.00, '3': 440.00, '4': 493.88,
+  '5': 523.25, '6': 587.33, '7': 659.25, '8': 698.46,
+  '9': 783.99, '10': 880.00
+};
+
+const PROGRESSION_LIST = [
+  { base: 'Dó', pos: -2 }, { base: 'Ré', pos: -1 },
+  { base: 'Mi', pos: 0 }, { base: 'Fá', pos: 1 }, { base: 'Sol', pos: 2 },
+  { base: 'Lá', pos: 3 }, { base: 'Si', pos: 4 }, { base: 'Dó', pos: 5 },
+  { base: 'Ré', pos: 6 }, { base: 'Mi', pos: 7 }, { base: 'Fá', pos: 8 },
+  { base: 'Sol', pos: 9 }, { base: 'Lá', pos: 10 }
+];
+
+class GameNote {
+  x: number;
+  baseName: string;
+  pos: number;
+  color: string;
+  trueColor: string;
+  marked: boolean;
+
+  constructor(canvasWidth: number, currentLvl: number) {
+    this.x = canvasWidth + 50;
+    const unlockedCount = Math.min(currentLvl + 1, PROGRESSION_LIST.length);
+    const availableNotes = PROGRESSION_LIST.slice(0, unlockedCount);
+    const pick = availableNotes[Math.floor(Math.random() * availableNotes.length)];
+    this.baseName = pick.base;
+    this.pos = pick.pos;
+    this.color = NOTE_COLORS[this.baseName];
+    this.trueColor = NOTE_COLORS[this.baseName];
+    this.marked = false;
+  }
+}
 
 interface MestreDaClaveProps {
   onBack?: () => void;
@@ -22,107 +116,28 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
   const [lives, setLives] = useState<number>(3);
   const [pausesLeft, setPausesLeft] = useState<number>(3);
   const { mestreClaveRecord: highScore, setMestreClaveRecord: setHighScore } = useMsaCourse();
-  const [isPortrait, setIsPortrait] = useState<boolean>(false);
   const [showRedFlash, setShowRedFlash] = useState<boolean>(false);
   const [levelUpMessage, setLevelUpMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    const checkOrientation = () => {
-      // Show overlay if height > width and screen is mobile or small device (e.g., width < 1024px)
-      setIsPortrait(window.innerHeight > window.innerWidth && window.innerWidth < 1024);
-    };
-    checkOrientation();
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', checkOrientation);
-    return () => {
-      window.removeEventListener('resize', checkOrientation);
-      window.removeEventListener('orientationchange', checkOrientation);
-    };
-  }, []);
   
   // Audio state
 
-  const notesRef = useRef<any[]>([]);
-  const particlesRef = useRef<any[]>([]);
+  const notesRef = useRef<GameNote[]>([]);
+  const particlesRef = useRef<GameParticle[]>([]);
   const lastTimeRef = useRef<number>(0);
   const spawnTimerRef = useRef<number>(0);
   const hitsInLevelRef = useRef<number>(0);
   const animationIdRef = useRef<number>(0);
   const shakeIntensityRef = useRef<number>(0);
   
-  // Audio Map
-  const posToFreq: { [key: string]: number } = {
-    '-3': 246.94, '-2': 261.63, '-1': 293.66, '0': 329.63,
-    '1': 349.23, '2': 392.00, '3': 440.00, '4': 493.88,
-    '5': 523.25, '6': 587.33, '7': 659.25, '8': 698.46,
-    '9': 783.99, '10': 880.00
-  };
-
-  const noteColors: { [key: string]: string } = { 
-    'Dó': '#e74c3c', 'Ré': '#e67e22', 'Mi': '#f1c40f', 
-    'Fá': '#2ecc71', 'Sol': '#3498db', 'Lá': '#9b59b6', 'Si': '#e84393' 
-  };
-
-  const noteDarkColors: { [key: string]: string } = { 
-    'Dó': '#781005', 'Ré': '#823c02', 'Mi': '#8f7100', 
-    'Fá': '#11592c', 'Sol': '#114a73', 'Lá': '#4d2361', 'Si': '#85104a' 
-  };
-
-  const progressionList = [
-    { base: 'Dó', pos: -2 }, { base: 'Ré', pos: -1 }, 
-    { base: 'Mi', pos: 0 }, { base: 'Fá', pos: 1 }, { base: 'Sol', pos: 2 }, 
-    { base: 'Lá', pos: 3 }, { base: 'Si', pos: 4 }, { base: 'Dó', pos: 5 }, 
-    { base: 'Ré', pos: 6 }, { base: 'Mi', pos: 7 }, { base: 'Fá', pos: 8 },
-    { base: 'Sol', pos: 9 }, { base: 'Lá', pos: 10 }
-  ];
-
-
   // Helper to play reward chord using global audio engine
   const handleRewardChord = (pos: number) => {
-    const rootFreq = posToFreq[pos];
+    const rootFreq = POS_TO_FREQ[pos];
     if (rootFreq) {
       playRewardChord(rootFreq);
     }
   };
 
-  // Particle Class with physics & gravity (frame-rate independent)
-  class GameParticle {
-    x: number;
-    y: number;
-    color: string;
-    size: number;
-    speedX: number;
-    speedY: number;
-    life: number;
-    lifeDecay: number;
-    gravity: number;
-    isStar: boolean;
-    rotation: number;
-    rotationSpeed: number;
-
-    constructor(x: number, y: number, color: string, speedX?: number, speedY?: number, lifeDecay?: number, gravity = 350) {
-      this.x = x;
-      this.y = y;
-      this.color = color;
-      this.size = Math.random() * 5 + 3.5;
-      // All speeds are in pixels per second
-      this.speedX = speedX !== undefined ? speedX : (Math.random() * 300 - 150);
-      this.speedY = speedY !== undefined ? speedY : (Math.random() * -320 - 120);
-      this.life = 1.0;
-      this.lifeDecay = lifeDecay !== undefined ? lifeDecay : (Math.random() * 0.45 + 0.45); // lasts between 1.1 and 2.2 seconds
-      this.gravity = gravity;
-      this.isStar = Math.random() > 0.45;
-      this.rotation = Math.random() * Math.PI * 2;
-      this.rotationSpeed = (Math.random() - 0.5) * 6; // radians per second
-    }
-    update(dt: number) {
-      this.x += this.speedX * dt;
-      this.y += this.speedY * dt;
-      this.speedY += this.gravity * dt; // gravity acceleration
-      this.rotation += this.rotationSpeed * dt;
-      this.life -= this.lifeDecay * dt;
-    }
-  }
+  // GameParticle class is defined at module level above
 
   // Draw Star Helper
   const drawStar = (ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number) => {
@@ -150,7 +165,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
   };
 
   // Float text references
-  const floatTextsRef = useRef<any[]>([]);
+  const floatTextsRef = useRef<FloatText[]>([]);
 
   const spawnParticles = (x: number, y: number, color: string) => {
     // Spawn 18 high-fidelity particles for a satisfying feedback loop!
@@ -188,27 +203,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
   const [activeSpeed, setActiveSpeed] = useState<number>(150);
   const [spawnInterval, setSpawnInterval] = useState<number>(2000);
 
-  // Note class inside effect or compiled
-  class GameNote {
-    x: number;
-    baseName: string;
-    pos: number;
-    color: string;
-    trueColor: string;
-    marked: boolean;
-
-    constructor(canvasWidth: number, currentLvl: number) {
-      this.x = canvasWidth + 50;
-      const unlockedCount = Math.min(currentLvl + 1, progressionList.length);
-      const availableNotes = progressionList.slice(0, unlockedCount);
-      const pick = availableNotes[Math.floor(Math.random() * availableNotes.length)];
-      this.baseName = pick.base;
-      this.pos = pick.pos;
-      this.color = noteColors[this.baseName];
-      this.trueColor = noteColors[this.baseName];
-      this.marked = false;
-    }
-  }
+  // GameNote class is defined at module level above
 
   // Handle Note input
   const inputNote = (base: string) => {
@@ -251,8 +246,8 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
           spawnConfetti();
           
           let msg = `Nível ${nextLvl}! `;
-          if (nextLvl <= progressionList.length) {
-            const newNote = progressionList[nextLvl - 1]?.base || 'Si';
+          if (nextLvl <= PROGRESSION_LIST.length) {
+            const newNote = PROGRESSION_LIST[nextLvl - 1]?.base || 'Si';
             msg += `Nova Nota: ${newNote} 🎶`;
           } else {
             msg += `Desafio Máximo de Velocidade! ⚡`;
@@ -486,7 +481,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
         
         // 3D glossy gradient for notehead
         const baseColor = n.color;
-        const darkColor = noteDarkColors[n.baseName] || '#1e293b';
+        const darkColor = NOTE_DARK_COLORS[n.baseName] || '#1e293b';
         
         const grad = ctx.createRadialGradient(
           n.x - lineGap * 0.18, y - lineGap * 0.15, lineGap * 0.05,
@@ -576,7 +571,6 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
     return () => {
       cancelAnimationFrame(animationIdRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, level, activeSpeed, spawnInterval]);
 
   // Calculate XP-progress bar
@@ -584,27 +578,7 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-white text-slate-800 font-sans overflow-hidden z-40" id="mestre-da-clave-screen">
-      {/* Landscape Orientation Warning Overlay */}
-      {isPortrait && (
-        <div className="fixed inset-0 bg-slate-900/98 backdrop-blur-md flex flex-col items-center justify-center p-6 z-[100] text-center text-white">
-          <motion.div
-            animate={{ rotate: [0, 90, 90, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut", repeatDelay: 1 }}
-            className="text-amber-500 mb-6"
-          >
-            <Smartphone size={80} strokeWidth={1.5} />
-          </motion.div>
-          <h2 className="text-2xl font-black text-amber-500 mb-2 uppercase tracking-wide">
-            Modo Paisagem Obrigatório 📱
-          </h2>
-          <p className="text-sm text-slate-300 max-w-xs font-bold leading-relaxed mb-4">
-            Por favor, rotacione o seu dispositivo para a horizontal (modo paisagem) para jogar o <strong className="text-white">Mestre da Clave</strong>!
-          </p>
-          <span className="text-xs text-slate-500 uppercase tracking-widest font-black">
-            Issa Academy - Mestre da Clave
-          </span>
-        </div>
-      )}
+      {/* Orientation guard handled by <OrientationGuard> in App.tsx */}
 
       {/* XP Bar */}
       <div className="w-full h-2 bg-slate-100 relative z-20">
@@ -806,49 +780,49 @@ export function MestreDaClave({ onBack }: MestreDaClaveProps) {
             <button 
               onPointerDown={() => inputNote('Dó')}
               className="py-2.5 sm:py-4 md:py-5 bg-white text-slate-800 border-b-4 border-slate-300 font-black text-xs sm:text-sm md:text-lg rounded-xl hover:bg-slate-50 active:translate-y-1 active:border-b-0 cursor-pointer transition-all hover:scale-[1.01]"
-              style={{ color: noteColors['Dó'], borderBottomColor: '#c0392b' }}
+              style={{ color: NOTE_COLORS['Dó'], borderBottomColor: '#c0392b' }}
             >
               Dó
             </button>
             <button 
               onPointerDown={() => inputNote('Ré')}
               className="py-2.5 sm:py-4 md:py-5 bg-white text-slate-800 border-b-4 border-slate-300 font-black text-xs sm:text-sm md:text-lg rounded-xl hover:bg-slate-50 active:translate-y-1 active:border-b-0 cursor-pointer transition-all hover:scale-[1.01]"
-              style={{ color: noteColors['Ré'], borderBottomColor: '#d35400' }}
+              style={{ color: NOTE_COLORS['Ré'], borderBottomColor: '#d35400' }}
             >
               Ré
             </button>
             <button 
               onPointerDown={() => inputNote('Mi')}
               className="py-2.5 sm:py-4 md:py-5 bg-white text-slate-800 border-b-4 border-slate-300 font-black text-xs sm:text-sm md:text-lg rounded-xl hover:bg-slate-50 active:translate-y-1 active:border-b-0 cursor-pointer transition-all hover:scale-[1.01]"
-              style={{ color: noteColors['Mi'], borderBottomColor: '#f39c12' }}
+              style={{ color: NOTE_COLORS['Mi'], borderBottomColor: '#f39c12' }}
             >
               Mi
             </button>
             <button 
               onPointerDown={() => inputNote('Fá')}
               className="py-2.5 sm:py-4 md:py-5 bg-white text-slate-800 border-b-4 border-slate-300 font-black text-xs sm:text-sm md:text-lg rounded-xl hover:bg-slate-50 active:translate-y-1 active:border-b-0 cursor-pointer transition-all hover:scale-[1.01]"
-              style={{ color: noteColors['Fá'], borderBottomColor: '#27ae60' }}
+              style={{ color: NOTE_COLORS['Fá'], borderBottomColor: '#27ae60' }}
             >
               Fá
             </button>
             <button 
               onPointerDown={() => inputNote('Sol')}
               className="py-2.5 sm:py-4 md:py-5 bg-white text-slate-800 border-b-4 border-slate-300 font-black text-xs sm:text-sm md:text-lg rounded-xl hover:bg-slate-50 active:translate-y-1 active:border-b-0 cursor-pointer transition-all hover:scale-[1.01]"
-              style={{ color: noteColors['Sol'], borderBottomColor: '#2980b9' }}
+              style={{ color: NOTE_COLORS['Sol'], borderBottomColor: '#2980b9' }}
             >
               Sol
             </button>
             <button 
               onPointerDown={() => inputNote('Lá')}
               className="py-2.5 sm:py-4 md:py-5 bg-white text-slate-800 border-b-4 border-slate-300 font-black text-xs sm:text-sm md:text-lg rounded-xl hover:bg-slate-50 active:translate-y-1 active:border-b-0 cursor-pointer transition-all hover:scale-[1.01]"
-              style={{ color: noteColors['Lá'], borderBottomColor: '#8e44ad' }}
+              style={{ color: NOTE_COLORS['Lá'], borderBottomColor: '#8e44ad' }}
             >
               Lá
             </button>
             <button 
               onPointerDown={() => inputNote('Si')}
               className="py-2.5 sm:py-4 md:py-5 bg-white text-slate-800 border-b-4 border-slate-300 font-black text-xs sm:text-sm md:text-lg rounded-xl hover:bg-slate-50 active:translate-y-1 active:border-b-0 cursor-pointer transition-all hover:scale-[1.01]"
-              style={{ color: noteColors['Si'], borderBottomColor: '#c03676' }}
+              style={{ color: NOTE_COLORS['Si'], borderBottomColor: '#c03676' }}
             >
               Si
             </button>
