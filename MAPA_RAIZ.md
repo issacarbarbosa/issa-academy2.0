@@ -86,6 +86,7 @@ issa-academy/
 │   ├── 📁 modules/ # Módulos de funcionalidades do projeto
 │   │   └── 📁 curso-msa/ # Trilha digital didática do MSA (slideshows, simulados e jogos)
 │   │       ├── 📁 components/ # Componentes da trilha MSA (LessonSlideshow, PhaseCard, etc.)
+│   │       │   ├── 📄 LessonItemRow.test.tsx
 │   │       │   ├── 📄 LessonItemRow.tsx
 │   │       │   ├── 📄 LessonSlideshow.tsx
 │   │       │   ├── 📄 PhaseCard.tsx
@@ -132,4 +133,4 @@ issa-academy/
 ```
 
 ---
-*Gerado automaticamente em: 03/07/2026, 22:02:49*
+*Gerado automaticamente em: 03/07/2026, 23:15:58*

@@ -15,7 +15,7 @@ O **Issa Academy** é uma plataforma educacional gamificada de ensino musical vo
 - **Animações**: Motion / Framer Motion
 - **Sons**: Web Audio API (Síntese acústica dinâmica em tempo de execução)
 - **Tipagem**: TypeScript (Strict Mode e checagem sem `implicitAny`) + Zod para validação em tempo de execução
-- **Arquitetura**: Estado global de quiz via Zustand (`useQuizStore`), desmembramento modular de telas curriculares (`PhaseCard`, `LessonItemRow`, manifesto de 16 fases em `msaPhasesManifest.ts`), roteamento declarativo (`react-router-dom` com `<HashRouter>` e `React.lazy` para Code Splitting), PWA offline-first com Workbox (`vite-plugin-pwa`), blindagem de schemas JSON via Zod (`schema.ts`) e testes unitários co-localizados via Vitest e Testing Library (`*.test.ts`).
+- **Arquitetura**: Estado global de quiz via Zustand (`useQuizStore`), desmembramento modular de telas curriculares (`PhaseCard`, `LessonItemRow` com layout unificado linear de lição sem abas integrado com materiais de apoio do Google Drive, manifesto de 16 fases em `msaPhasesManifest.ts`), roteamento declarativo (`react-router-dom` com `<HashRouter>` e `React.lazy` para Code Splitting), PWA offline-first com Workbox (`vite-plugin-pwa`), blindagem de schemas JSON via Zod (`schema.ts`) e testes unitários co-localizados via Vitest e Testing Library (`*.test.ts`, `*.test.tsx`).
 
 ---
 

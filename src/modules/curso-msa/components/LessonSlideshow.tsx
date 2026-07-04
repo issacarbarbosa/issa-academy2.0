@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, GraduationCap, ChevronLeft, ChevronRight, CheckCircle, 
-  Volume2, Youtube, ThumbsUp, Bell, MessageSquare, RotateCcw 
+  Volume2, Youtube, ThumbsUp, MessageSquare, RotateCcw 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
@@ -489,113 +489,123 @@ export const LessonSlideshow: React.FC<LessonSlideshowProps> = ({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="text-center py-8 bg-slate-50 border-2 border-slate-200 rounded-3xl p-8 shadow-sm space-y-6"
+              className="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl text-slate-100 animate-slide text-left"
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-black uppercase tracking-wider">
-                <CheckCircle size={14} /> Aula Finalizada com Sucesso!
-              </div>
-
-              <div className="space-y-2">
-                <h2 className="text-2xl md:text-3xl font-black text-slate-800">Excelente Estudo do MSA!</h2>
-                <p className="text-xs md:text-sm text-slate-500 font-extrabold max-w-xl mx-auto">
-                  Agora você domina a base teórica e prática do Endecagrama (3.1).
-                </p>
-              </div>
-
-              {/* Summary key points card */}
-              <div className="max-w-2xl mx-auto bg-white border-2 border-slate-200 p-5 rounded-2xl text-left grid grid-cols-1 md:grid-cols-3 gap-4 shadow-inner">
-                <div className="space-y-1">
-                  <span className="text-xs text-indigo-600 font-black uppercase tracking-wider block">11 LINHAS</span>
-                  <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">Unificação da Clave de Sol e Fá conectadas pelo Dó Central.</p>
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+                {/* Lado Esquerdo: Mascote Fufu com Troféu (Grande e Animado) */}
+                <div className="flex flex-col items-center justify-center shrink-0 w-full md:w-auto">
+                  <div className="relative p-3 rounded-2xl bg-slate-950/40 border border-slate-800/60 shadow-inner flex items-center justify-center min-h-[160px] md:min-h-[220px] w-full md:w-56 overflow-hidden">
+                    <img 
+                      src="/assets/fufu-comemorando-trofeu-gabarito.png" 
+                      alt="Fufu comemorando com Troféu" 
+                      className="h-36 md:h-48 object-contain animate-bounce"
+                      style={{ animationDuration: '3.5s' }}
+                    />
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-wider mt-3">
+                    <CheckCircle size={12} /> Aula Concluída!
+                  </div>
                 </div>
-                <div className="space-y-1 border-y md:border-y-0 md:border-x border-slate-100 py-3 md:py-0 md:px-4">
-                  <span className="text-xs text-amber-600 font-black uppercase tracking-wider block">ALTURA</span>
-                  <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">Sons Graves e Agudos. Depende da frequência (Hz), e não do volume!</p>
-                </div>
-                <div className="space-y-1 md:pl-2">
-                  <span className="text-xs text-purple-600 font-black uppercase tracking-wider block">DÓ CENTRAL</span>
-                  <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">Dó3 é o elo de transição universal entre as claves.</p>
-                </div>
-              </div>
 
-              {/* YouTube Call to Action Cards */}
-              <div className="max-w-2xl mx-auto pt-4 space-y-4">
-                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">
-                  Apoie o Canal do PROFESSOR ISSA!
-                </h4>
+                {/* Lado Direito: Conteúdos e Ações */}
+                <div className="flex-1 space-y-4 w-full">
+                  <div className="space-y-1">
+                    <h2 className="text-xl md:text-2xl font-black text-white">Excelente Estudo do MSA!</h2>
+                    <p className="text-[10px] md:text-xs text-slate-400 font-extrabold leading-normal">
+                      Parabéns! Você concluiu a Fase 3 • Item 3.1 e domina a base teórica e prática do Endecagrama.
+                    </p>
+                  </div>
 
-                <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-left shadow-sm hover:border-red-500/30 transition-all group">
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-16 h-16 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-[2px] shadow group-hover:scale-105 transition-transform shrink-0">
-                      <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
-                        <img 
-                          src="https://unavatar.io/youtube/@issacarbarbosa" 
-                          alt="Prof. Issacar Barbosa" 
-                          className="w-full h-full rounded-full object-cover"
-                          referrerPolicy="no-referrer"
-                          onError={(e) => {
-                            e.currentTarget.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200";
-                          }}
-                        />
+                  {/* Summary key points card */}
+                  <div className="bg-slate-950/40 border border-slate-800/80 p-3.5 rounded-2xl grid grid-cols-1 sm:grid-cols-3 gap-3 shadow-inner">
+                    <div className="space-y-0.5">
+                      <span className="text-[9px] text-indigo-400 font-black uppercase tracking-wider block">11 LINHAS</span>
+                      <p className="text-[9px] text-slate-400 font-bold leading-normal">Conexão da Clave de Sol e Fá pelo Dó Central.</p>
+                    </div>
+                    <div className="space-y-0.5 border-y sm:border-y-0 sm:border-x border-slate-800 py-1.5 sm:py-0 sm:px-3">
+                      <span className="text-[9px] text-amber-400 font-black uppercase tracking-wider block">ALTURA</span>
+                      <p className="text-[9px] text-slate-400 font-bold leading-normal">Sons Graves/Agudos, baseados na frequência (Hz).</p>
+                    </div>
+                    <div className="space-y-0.5 sm:pl-1">
+                      <span className="text-[9px] text-purple-400 font-black uppercase tracking-wider block">DÓ CENTRAL</span>
+                      <p className="text-[9px] text-slate-400 font-bold leading-normal">Dó3 é a nota de transição entre as claves.</p>
+                    </div>
+                  </div>
+
+                  {/* YouTube Call to Action Cards */}
+                  <div className="space-y-3">
+                    <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm hover:border-red-500/30 transition-all group">
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-12 h-12 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-[1.5px] shadow group-hover:scale-105 transition-transform shrink-0">
+                          <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                            <img 
+                              src="https://unavatar.io/youtube/@issacarbarbosa" 
+                              alt="Prof. Issacar Barbosa" 
+                              className="w-full h-full rounded-full object-cover"
+                              referrerPolicy="no-referrer"
+                              onError={(e) => {
+                                e.currentTarget.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200";
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-xs md:text-sm font-black text-white flex items-center gap-1">
+                            Prof. Issacar Barbosa
+                          </h3>
+                          <p className="text-[9px] text-slate-400 font-bold">@issacarbarbosa • Teoria e Solfejo CCB</p>
+                        </div>
                       </div>
-                      <div className="absolute -bottom-1 -right-1 bg-red-600 text-white rounded-full p-1 border border-white flex items-center justify-center">
-                        <Youtube size={10} fill="white" />
-                      </div>
+                      <a 
+                        href="https://www.youtube.com/@issacarbarbosa?sub_confirmation=1" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white border-b-2 border-red-800 active:border-b-0 active:translate-y-0.5 font-black text-[10px] rounded-lg flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer hover:scale-[1.02]"
+                      >
+                        <Youtube size={12} fill="white" />
+                        Inscrever-se
+                      </a>
                     </div>
-                    <div>
-                      <h3 className="text-sm md:text-base font-black text-slate-800 flex items-center gap-1.5">
-                        Prof. Issacar Barbosa
-                      </h3>
-                      <p className="text-[11px] text-slate-400 font-bold">@issacarbarbosa • Método de Teoria e Solfejo (MSA) - CCB</p>
-                      <p className="text-[10px] text-red-500 font-black mt-0.5">Inscreva-se para dominar toda a teoria e solfejo passo a passo!</p>
+
+                    {/* YouTube Interaction Buttons (Clickable Links to specific video) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <a
+                        href="https://www.youtube.com/watch?v=MmU-j95eYKQ"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2.5 p-3 bg-slate-950/40 border border-slate-800/80 rounded-xl text-left hover:bg-slate-900 hover:border-red-500/20 transition-all group"
+                      >
+                        <span className="text-red-550 group-hover:scale-110 transition-transform"><ThumbsUp size={16} /></span>
+                        <div>
+                          <strong className="text-[10px] text-slate-200 block font-black group-hover:text-red-400 transition-colors">Deixar o Like na Aula</strong>
+                          <span className="text-[8px] text-slate-400 font-semibold leading-normal block">Apoie esta aula no YouTube</span>
+                        </div>
+                      </a>
+
+                      <a
+                        href="https://www.youtube.com/watch?v=MmU-j95eYKQ#comments"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2.5 p-3 bg-slate-950/40 border border-slate-800/80 rounded-xl text-left hover:bg-slate-900 hover:border-red-500/20 transition-all group"
+                      >
+                        <span className="text-red-550 group-hover:scale-110 transition-transform"><MessageSquare size={16} /></span>
+                        <div>
+                          <strong className="text-[10px] text-slate-200 block font-black group-hover:text-red-400 transition-colors">Comentar ou Tirar Dúvida</strong>
+                          <span className="text-[8px] text-slate-400 font-semibold leading-normal block">Participe ou envie sua pergunta</span>
+                        </div>
+                      </a>
                     </div>
                   </div>
-                  <a 
-                    href="https://www.youtube.com/@issacarbarbosa" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white border-b-4 border-red-800 active:border-b-0 active:translate-y-0.5 font-black text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-                  >
-                    <Youtube size={16} fill="white" />
-                    Inscrever-se
-                  </a>
+
+                  <div className="pt-1 flex justify-start gap-3">
+                    <button
+                      onClick={() => setCurrentSlide(0)}
+                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-[10px] font-black rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <RotateCcw size={12} /> Recomeçar Aula
+                    </button>
+                  </div>
                 </div>
-
-                {/* YouTube Interaction Icons: Like, subscribe/bell, and comment */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="flex items-center gap-3 p-4 bg-red-50/50 border border-red-100 rounded-xl text-left hover:bg-white transition-all">
-                    <span className="text-xl text-red-500"><ThumbsUp size={20} /></span>
-                    <div>
-                      <strong className="text-xs text-slate-700 block font-black">Deixe o Like</strong>
-                      <span className="text-[10px] text-slate-400 font-semibold">Clique em gostei para apoiar</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 p-4 bg-red-50/50 border border-red-100 rounded-xl text-left hover:bg-white transition-all">
-                    <span className="text-xl text-red-500"><Bell size={20} /></span>
-                    <div>
-                      <strong className="text-xs text-slate-700 block font-black">Ative o Sino</strong>
-                      <span className="text-[10px] text-slate-400 font-semibold">Fique por dentro de novas aulas</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 p-4 bg-red-50/50 border border-red-100 rounded-xl text-left hover:bg-white transition-all">
-                    <span className="text-xl text-red-500"><MessageSquare size={20} /></span>
-                    <div>
-                      <strong className="text-xs text-slate-700 block font-black">Deixe Comentários</strong>
-                      <span className="text-[10px] text-slate-400 font-semibold">Diga no canal quantos acertos fez!</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 flex justify-center gap-3">
-                <button
-                  onClick={() => setCurrentSlide(0)}
-                  className="px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-600 border-2 border-slate-200 text-xs font-black rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <RotateCcw size={14} /> Recomeçar Aula
-                </button>
               </div>
             </motion.div>
           )}

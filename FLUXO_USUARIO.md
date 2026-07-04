@@ -29,15 +29,15 @@ graph TD
     B -- "Card: Simulado" --> E[/"📝 Simulado Oficial ( /simulado )"/]
     class C,D,E route;
 
-    %% SUB-FLUXO: CURSO E AULAS (Com Abas Internas)
+    %% SUB-FLUXO: CURSO E AULAS (Layout Unificado)
     C -- "Seleciona Fase/Item (ex: Fase 3.1)" --> F[/"🎓 Sala de Aula ( /curso/aula )"/]
     class F route;
     
-    subgraph S1 ["Sala de Aula (Navegação Interna sem recarregar)"]
-        F --> F1["🎬 Aba: Assistir<br>(Vídeo YouTube NetworkOnly)"]
-        F --> F2["📖 Aba: Resumo Teórico<br>(Pontos Chave Offline)"]
-        F --> F3["🧪 Aba: Praticar / Quiz<br>(Exercícios & Mini Pauta via StaffSvgEngine)"]
-        F3 -- "Se for Fase 3.1" --> F4["🎹 Slideshow Interativo<br>(Endecagrama 11 Linhas via StaffSvgEngine)"]
+    subgraph S1 ["Sala de Aula (Layout Unificado Linear)"]
+        F --> F1["🎥 Player de Vídeo YouTube"]
+        F --> F2["📁 Materiais de Apoio<br>(PDF/Áudio Google Drive)"]
+        F1 -- "Se for Fase 3.1" --> F3["🎹 Slideshow Interativo<br>(Endecagrama 11 Linhas + Teclado)"]
+        F3 -- "Slide Final de Encerramento" --> F4["⭐ YouTube CTA Slide<br>(Auto-Inscrição & Likes/Comentários Dinâmicos)"]
     end
     class F1,F2,F3,F4 state;
 
